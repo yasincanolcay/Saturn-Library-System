@@ -1,0 +1,52 @@
+C:\csharp projelerim\Saturn Library System\Saturn Library System\bin\Debug\Saturn Library System.exe.config
+C:\csharp projelerim\Saturn Library System\Saturn Library System\bin\Debug\Saturn Library System.exe
+C:\csharp projelerim\Saturn Library System\Saturn Library System\bin\Debug\Saturn Library System.pdb
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.Form1.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.Properties.Resources.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn Library System.csproj.GenerateResource.cache
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn Library System.csproj.CoreCompileInputs.cache
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn Library System.exe
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn Library System.pdb
+C:\csharp projelerim\Saturn Library System\Saturn Library System\bin\Debug\Guna.UI2.dll
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.HomePage.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.BooksPage.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\bin\Debug\SaturnDatabase.mdf
+C:\csharp projelerim\Saturn Library System\Saturn Library System\bin\Debug\SaturnDatabase_log.ldf
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.BooksCard.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.AddBook.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.BookDetailCard.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.BookShowCard.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.ActionsCard.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.MaterialEffect.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.AddUser.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.UserCard.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.UsersPage.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.UserDetailsCard.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.UserInfoDialog.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.WarningCard.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.UserProfilePage.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.AddWriter.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.AddPublishHouse.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.AddReturn.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.ReturnPage.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.GetReturnDialog.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.AddReminder.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.ReminderCard.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.ReminderPage.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.AlertReminder.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.WriterCard.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.WritersPage.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.WriterDetailsCard.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.PublishHouseCard.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.PublishHouseDetailCard.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.WriterAndHouseBooks.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.SettingsPage.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.LoginPage.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.LoginCard.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.RegisterCard.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\bin\Debug\Newtonsoft.Json.dll
+C:\csharp projelerim\Saturn Library System\Saturn Library System\bin\Debug\Newtonsoft.Json.xml
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn Library System.csproj.AssemblyReference.cache
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.ChangePasswordPage.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.NewPasswordPage.resources
+C:\csharp projelerim\Saturn Library System\Saturn Library System\obj\Debug\Saturn_Library_System.ForgetPassword.resources
