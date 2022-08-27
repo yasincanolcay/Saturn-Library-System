@@ -28,25 +28,39 @@ namespace Saturn_Library_System
 
         private void ChangePasswordPage_Load(object sender, EventArgs e)
         {
-            using(SqlCommand command = new SqlCommand("SELECT * From [LoginUsers] where Id='" + Id + "'", sqlConnection))
+            try
             {
-                Password = "";
-                sqlConnection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-                if (reader.Read())
+                using (SqlCommand command = new SqlCommand("SELECT * From [LoginUsers] where Id='" + Id + "'", sqlConnection))
                 {
-                    askLabel.Text = reader["SecurityAsk"].ToString();
-                    answer = reader["SecurityAnswer"].ToString();
-                    Password = reader["Password"].ToString(); //get the user password from db if the user name is exist in that.  
+                    Password = "";
+                    sqlConnection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        askLabel.Text = reader["SecurityAsk"].ToString();
+                        answer = reader["SecurityAnswer"].ToString();
+                        Password = reader["Password"].ToString(); //get the user password from db if the user name is exist in that.  
+                    }
+                    reader.Close();
+                    sqlConnection.Close();
+                    sqlConnection.Dispose();
                 }
-                reader.Close();
-                sqlConnection.Close();
-                sqlConnection.Dispose();
+                if (forgetMode)
+                {
+                    passwordTextbox.Visible = false;
+                    guna2Separator1.Visible = false;
+                }
             }
-            if (forgetMode)
+            catch
             {
-                passwordTextbox.Visible = false;
-                guna2Separator1.Visible = false;
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.errorMode = true;
+                warning.effect = effect;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
         public static string Decrypt(string cipherText)
@@ -76,15 +90,72 @@ namespace Saturn_Library_System
 
         private void nextButton_Click(object sender, EventArgs e)
         {
-            if (!forgetMode)
+            try
             {
-                changePassword();
-            }
-            else
-            {
-                if (askAnswerTextbox.Text != string.Empty)
+                if (!forgetMode)
                 {
-                    if (Decrypt(answer).Equals(askAnswerTextbox.Text))
+                    changePassword();
+                }
+                else
+                {
+                    if (askAnswerTextbox.Text != string.Empty)
+                    {
+                        if (Decrypt(answer).Equals(askAnswerTextbox.Text))
+                        {
+                            effect.Close();
+                            MaterialEffect effect2 = new MaterialEffect();
+                            effect2.Show();
+                            NewPasswordPage newPassword = new NewPasswordPage();
+                            newPassword.Id = Id;
+                            newPassword.effect = effect2;
+                            newPassword.ShowDialog();
+                            this.Close();
+                            effect.Close();
+                        }
+                        else
+                        {
+                            MaterialEffect effect2 = new MaterialEffect();
+                            effect2.Show();
+                            WarningCard warning = new WarningCard();
+                            warning.effect = effect2;
+                            warning.errorMode = true;
+                            warning.fullNameLabel.Text = "Yanlış Cevap";
+                            warning.emailLabel.Text = "Güvenlik sorusunu yanlış cevapladınız.";
+                            warning.ShowDialog();
+                        }
+                    }
+                    else
+                    {
+                        MaterialEffect effect2 = new MaterialEffect();
+                        effect2.Show();
+                        WarningCard warning = new WarningCard();
+                        warning.effect = effect2;
+                        warning.errorMode = true;
+                        warning.fullNameLabel.Text = "Geçersiz Değer";
+                        warning.emailLabel.Text = "Lütfen boş alanlara gerekli bilgileri giriniz";
+                        warning.ShowDialog();
+                    }
+                }
+            }
+            catch
+            {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.errorMode = true;
+                warning.effect = effect;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
+            }
+        }
+        private void changePassword()
+        {
+            try
+            {
+                if (askAnswerTextbox.Text != string.Empty && passwordTextbox.Text != string.Empty)
+                {
+                    if (Decrypt(Password).Equals(passwordTextbox.Text) && Decrypt(answer).Equals(askAnswerTextbox.Text))
                     {
                         effect.Close();
                         MaterialEffect effect2 = new MaterialEffect();
@@ -120,44 +191,15 @@ namespace Saturn_Library_System
                     warning.ShowDialog();
                 }
             }
-        }
-        private void changePassword()
-        {
-            if (askAnswerTextbox.Text != string.Empty && passwordTextbox.Text != string.Empty)
+            catch
             {
-                if (Decrypt(Password).Equals(passwordTextbox.Text) && Decrypt(answer).Equals(askAnswerTextbox.Text))
-                {
-                    effect.Close();
-                    MaterialEffect effect2 = new MaterialEffect();
-                    effect2.Show();
-                    NewPasswordPage newPassword = new NewPasswordPage();
-                    newPassword.Id = Id;
-                    newPassword.effect = effect2;
-                    newPassword.ShowDialog();
-                    this.Close();
-                    effect.Close();
-                }
-                else
-                {
-                    MaterialEffect effect2 = new MaterialEffect();
-                    effect2.Show();
-                    WarningCard warning = new WarningCard();
-                    warning.effect = effect2;
-                    warning.errorMode = true;
-                    warning.fullNameLabel.Text = "Yanlış Cevap";
-                    warning.emailLabel.Text = "Güvenlik sorusunu yanlış cevapladınız.";
-                    warning.ShowDialog();
-                }
-            }
-            else
-            {
-                MaterialEffect effect2 = new MaterialEffect();
-                effect2.Show();
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
                 WarningCard warning = new WarningCard();
-                warning.effect = effect2;
                 warning.errorMode = true;
-                warning.fullNameLabel.Text = "Geçersiz Değer";
-                warning.emailLabel.Text = "Lütfen boş alanlara gerekli bilgileri giriniz";
+                warning.effect = effect;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
                 warning.ShowDialog();
             }
         }

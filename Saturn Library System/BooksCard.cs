@@ -59,79 +59,125 @@ namespace Saturn_Library_System
 
         private void guna2PictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
-            if (!IsShow)
+            try
             {
-                numberLabel.Visible = true;
-                numberLabel.Text = BookNumber.ToString();
-                guna2PictureBox1.Image = null;
-                IsShow = true;
+                if (!IsShow)
+                {
+                    numberLabel.Visible = true;
+                    numberLabel.Text = BookNumber.ToString();
+                    guna2PictureBox1.Image = null;
+                    IsShow = true;
+                }
+                else
+                {
+                    MemoryStream mem = new MemoryStream(PhotoPath);
+                    numberLabel.Visible = false;
+                    guna2PictureBox1.Image = Image.FromStream(mem);
+                    IsShow = false;
+                }
             }
-            else
-            {
-                MemoryStream mem = new MemoryStream(PhotoPath);
-                numberLabel.Visible = false;
-                guna2PictureBox1.Image = Image.FromStream(mem);
-                IsShow = false;
-            }
+            catch { }
         }
 
         private void BooksCard_Load(object sender, EventArgs e)
         {
-            if (!getReturn&&!onUsers)
+            try
             {
-                MemoryStream mem = new MemoryStream(PhotoPath);
-                guna2PictureBox1.Image = Image.FromStream(mem);
-            }
-            else
-            {
-                getBooksInfo();
-            }
-            changeOpenpictureboxImage();
-        }
-        private void getBooksInfo()
-        {
-            SqlConnection.Open();
-            SqlCommand command = new SqlCommand();
-            command.Connection = SqlConnection;
-            command.CommandText = ("Select * From [Books]");
-            SqlDataReader reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                if (getReturnId==Convert.ToInt32(reader["Id"]))
+                if (!getReturn && !onUsers)
                 {
-                    BookNumber = Convert.ToInt32(reader["STOCKNUMBER"]);
-                    Byte[] data = new Byte[0];
-                    data = (Byte[])(reader["COVER"]);
-                    photoPath = data;
                     MemoryStream mem = new MemoryStream(PhotoPath);
                     guna2PictureBox1.Image = Image.FromStream(mem);
                 }
+                else
+                {
+                    getBooksInfo();
+                }
+                changeOpenpictureboxImage();
             }
-            sqlConnection.Close();
+            catch
+            {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.errorMode = true;
+                warning.effect = effect;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
+            }
+        }
+        private void getBooksInfo()
+        {
+            try
+            {
+                SqlConnection.Open();
+                SqlCommand command = new SqlCommand();
+                command.Connection = SqlConnection;
+                command.CommandText = ("Select * From [Books]");
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    if (getReturnId == Convert.ToInt32(reader["Id"]))
+                    {
+                        BookNumber = Convert.ToInt32(reader["STOCKNUMBER"]);
+                        Byte[] data = new Byte[0];
+                        data = (Byte[])(reader["COVER"]);
+                        photoPath = data;
+                        MemoryStream mem = new MemoryStream(PhotoPath);
+                        guna2PictureBox1.Image = Image.FromStream(mem);
+                    }
+                }
+                sqlConnection.Close();
+            }
+            catch
+            {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.errorMode = true;
+                warning.effect = effect;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
+            }
         }
         private void changeOpenpictureboxImage()
         {
-            if (AddReturn)
+            try
             {
-                if (admin || moderator)
+                if (AddReturn)
                 {
-                    openPicturebox.Image = Image.FromFile("images/plus_math_80px.png");
+                    if (admin || moderator)
+                    {
+                        openPicturebox.Image = Image.FromFile("images/plus_math_80px.png");
+                    }
+                    else
+                    {
+                        openPicturebox.Image = Image.FromFile("images/lock_30px.png");
+                    }
                 }
-                else
+                else if (getReturn)
                 {
-                    openPicturebox.Image = Image.FromFile("images/lock_30px.png");
+                    if (admin || moderator)
+                    {
+                        openPicturebox.Image = Image.FromFile("images/return_book_80px.png");
+                    }
+                    else
+                    {
+                        openPicturebox.Image = Image.FromFile("images/lock_30px.png");
+                    }
                 }
             }
-            else if (getReturn)
+            catch
             {
-                if (admin || moderator)
-                {
-                    openPicturebox.Image = Image.FromFile("images/return_book_80px.png");
-                }
-                else
-                {
-                    openPicturebox.Image = Image.FromFile("images/lock_30px.png");
-                }
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.errorMode = true;
+                warning.effect = effect;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
         private void numberLabel_MouseHover(object sender, EventArgs e)

@@ -29,14 +29,28 @@ namespace Saturn_Library_System
 
         private void ReturnPage_Load(object sender, EventArgs e)
         {
-            if (booksCard)
+            try
             {
-                loadBookCard(false);
+                if (booksCard)
+                {
+                    loadBookCard(false);
+                }
+                else
+                {
+                    loadUsersCard(false);
+                    headerLabel.Text = "Kitabı Alan Kullanıcılar";
+                }
             }
-            else
+            catch
             {
-                loadUsersCard(false);
-                headerLabel.Text = "Kitabı Alan Kullanıcılar";
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.effect = effect;
+                warning.errorMode = true;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
 
@@ -236,10 +250,6 @@ namespace Saturn_Library_System
                     sqlConnection.Close();
                 }
             }
-        }
-        private void guna2HScrollBar1_Scroll(object sender, ScrollEventArgs e)
-        {
-
         }
 
         private void listSortButton_Click(object sender, EventArgs e)

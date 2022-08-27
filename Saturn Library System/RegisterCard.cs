@@ -34,86 +34,128 @@ namespace Saturn_Library_System
         }
         private void registerButton_Click(object sender, EventArgs e)
         {
-            if (nameTextbox.Text!=string.Empty&&surnameTextbox.Text!=string.Empty&&usernameTextbox.Text!=string.Empty&&emailTextbox.Text!=string.Empty&&phoneTextbox.Text!=string.Empty&&passwordTextbox.Text!=string.Empty&&accessComboBox.Text!=string.Empty)
+            try
             {
-                usernameControl();
+                if (nameTextbox.Text != string.Empty && surnameTextbox.Text != string.Empty && usernameTextbox.Text != string.Empty && emailTextbox.Text != string.Empty && phoneTextbox.Text != string.Empty && passwordTextbox.Text != string.Empty && accessComboBox.Text != string.Empty)
+                {
+                    usernameControl();
+                }
+                if (limit < 3)
+                {
+                    limit++;
+                }
+                else
+                {
+                    limit = 0;
+                    registerButton.Visible = false;
+                    limitSecondLabel.Visible = true;
+                    limitTimer.Enabled = true;
+                    limitTimer.Start();
+                }
             }
-            if (limit < 3)
+            catch
             {
-                limit++;
-            }
-            else
-            {
-                limit = 0;
-                registerButton.Visible = false;
-                limitSecondLabel.Visible = true;
-                limitTimer.Enabled = true;
-                limitTimer.Start();
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.effect = effect;
+                warning.errorMode = true;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
         private void usernameControl()
         {
-            SqlConnection sqlConnection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + "'" + Application.StartupPath + "\\SaturnDatabase.mdf'" + ";Integrated Security=True");
+            try
+            {
+                SqlConnection sqlConnection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + "'" + Application.StartupPath + "\\SaturnDatabase.mdf'" + ";Integrated Security=True");
 
-            bool isHave = false;
-            using(SqlCommand command = new SqlCommand("SELECT * From [LoginUsers]",sqlConnection))
-            {
-                sqlConnection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
+                bool isHave = false;
+                using (SqlCommand command = new SqlCommand("SELECT * From [LoginUsers]", sqlConnection))
                 {
-                    if (reader["Username"].ToString() == usernameTextbox.Text)
+                    sqlConnection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    while (reader.Read())
                     {
-                        isHave = true;
-                        MaterialEffect effect = new MaterialEffect();
-                        effect.Show();
-                        WarningCard warning = new WarningCard();
-                        warning.errorMode = true;
-                        warning.effect = effect;
-                        warning.fullNameLabel.Text = "Geçersiz Kullanıcı Adı";
-                        warning.emailLabel.Text = "Kullanıcı adı zaten kullanılıyor, lütfen başka bir kullanıcı adı girin.";
-                        warning.ShowDialog();
+                        if (reader["Username"].ToString() == usernameTextbox.Text)
+                        {
+                            isHave = true;
+                            MaterialEffect effect = new MaterialEffect();
+                            effect.Show();
+                            WarningCard warning = new WarningCard();
+                            warning.errorMode = true;
+                            warning.effect = effect;
+                            warning.fullNameLabel.Text = "Geçersiz Kullanıcı Adı";
+                            warning.emailLabel.Text = "Kullanıcı adı zaten kullanılıyor, lütfen başka bir kullanıcı adı girin.";
+                            warning.ShowDialog();
+                        }
                     }
+                    reader.Close();
+                    sqlConnection.Close();
                 }
-                reader.Close();
-                sqlConnection.Close();
+                if (!isHave)
+                {
+                    register();
+                }
             }
-            if (!isHave)
+            catch
             {
-                register();
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.effect = effect;
+                warning.errorMode = true;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
         private void register()
         {
-            if (!addNewUser)
+            try
             {
-                access = "Admin";
+                if (!addNewUser)
+                {
+                    access = "Admin";
+                }
+                string query = "INSERT INTO [LoginUsers] (Name,Surname,UserName,Access,Email,Phone,Photo,Password,SecurityAsk,SecurityAnswer) VALUES (@name,@surname,@username,@access,@email,@phone,@photo,@password,@ask,@answer)";
+                using (SqlCommand command = new SqlCommand(query, sqlConnection))
+                {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@name", nameTextbox.Text);
+                    command.Parameters.AddWithValue("@surname", surnameTextbox.Text);
+                    command.Parameters.AddWithValue("@username", usernameTextbox.Text);
+                    command.Parameters.AddWithValue("@access", access);
+                    command.Parameters.AddWithValue("@email", emailTextbox.Text);
+                    command.Parameters.AddWithValue("@phone", phoneTextbox.Text);
+                    command.Parameters.AddWithValue("@photo", photoByte);
+                    string password = Encrypt(passwordTextbox.Text);
+                    command.Parameters.AddWithValue("@password", password);
+                    command.Parameters.AddWithValue("@ask", SecurityComboBox.Text);
+                    string answer = Encrypt(answerTextbox.Text);
+                    command.Parameters.AddWithValue("@answer", answer);
+                    sqlConnection.Open();
+                    command.ExecuteNonQuery();
+                    sqlConnection.Close();
+                }
+                registerButton.Visible = false;
+                loadingProgress.Visible = true;
+                loadingProgress.Start();
+                loadingTimer.Enabled = true;
+                loadingTimer.Start();
             }
-            string query = "INSERT INTO [LoginUsers] (Name,Surname,UserName,Access,Email,Phone,Photo,Password,SecurityAsk,SecurityAnswer) VALUES (@name,@surname,@username,@access,@email,@phone,@photo,@password,@ask,@answer)";
-            using (SqlCommand command = new SqlCommand(query, sqlConnection))
+            catch
             {
-                command.Parameters.Clear();
-                command.Parameters.AddWithValue("@name", nameTextbox.Text);
-                command.Parameters.AddWithValue("@surname", surnameTextbox.Text);
-                command.Parameters.AddWithValue("@username", usernameTextbox.Text);
-                command.Parameters.AddWithValue("@access", access);
-                command.Parameters.AddWithValue("@email", emailTextbox.Text);
-                command.Parameters.AddWithValue("@phone", phoneTextbox.Text);
-                command.Parameters.AddWithValue("@photo", photoByte);
-                string password = Encrypt(passwordTextbox.Text);
-                command.Parameters.AddWithValue("@password", password);
-                command.Parameters.AddWithValue("@ask", SecurityComboBox.Text);
-                string answer = Encrypt(answerTextbox.Text);
-                command.Parameters.AddWithValue("@answer", answer);
-                sqlConnection.Open();
-                command.ExecuteNonQuery();
-                sqlConnection.Close();
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.effect = effect;
+                warning.errorMode = true;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
-            registerButton.Visible = false;
-            loadingProgress.Visible = true;
-            loadingProgress.Start();
-            loadingTimer.Enabled = true;
-            loadingTimer.Start();
         }
         private void loadingTimer_Tick(object sender, EventArgs e)
         {

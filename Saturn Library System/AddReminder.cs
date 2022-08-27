@@ -133,7 +133,6 @@ namespace Saturn_Library_System
 
         private void createButton_Click(object sender, EventArgs e)
         {
-            goingto:
             try
             {
                 SqlConnection sqlConnection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + "'" + Application.StartupPath + "\\SaturnDatabase.mdf'" + ";Integrated Security=True");
@@ -169,7 +168,14 @@ namespace Saturn_Library_System
             }
             catch
             {
-                goto goingto;
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.errorMode = true;
+                warning.effect = effect;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Kayıt yapılırken bir hata oluştu, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
 

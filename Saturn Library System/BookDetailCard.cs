@@ -59,83 +59,119 @@ namespace Saturn_Library_System
         }
         private void BookDetailCard_Load(object sender, EventArgs e)
         {
-            if (!getReturn && !onUsers)
+            try
             {
-                MemoryStream mem = new MemoryStream(PhotoPath);
-                thumbPicturebox.Image = Image.FromStream(mem);
-            }
-            else
-            {
-                getBooksInfo();
-            }
-            changeOpenpictureboxImage();
-            if (Tag1.Length != 0)
-            {
-                tagTablePanel.Controls.Clear();
-                for (int index = 0; index < Tag1.Length; index++)
+                if (!getReturn && !onUsers)
                 {
-                    Guna.UI2.WinForms.Guna2Chip tagChip = new Guna.UI2.WinForms.Guna2Chip();
-                    tagChip.Text = Tag1[index];
-                    tagChip.IsClosable = false;
-                    tagChip.FillColor = Color.Chocolate;
-                    tagTablePanel.Controls.Add(tagChip);
-                    tagChip.Show();
+                    MemoryStream mem = new MemoryStream(PhotoPath);
+                    thumbPicturebox.Image = Image.FromStream(mem);
                 }
+                else
+                {
+                    getBooksInfo();
+                }
+                changeOpenpictureboxImage();
+                if (Tag1.Length != 0)
+                {
+                    tagTablePanel.Controls.Clear();
+                    for (int index = 0; index < Tag1.Length; index++)
+                    {
+                        Guna.UI2.WinForms.Guna2Chip tagChip = new Guna.UI2.WinForms.Guna2Chip();
+                        tagChip.Text = Tag1[index];
+                        tagChip.IsClosable = false;
+                        tagChip.FillColor = Color.Chocolate;
+                        tagTablePanel.Controls.Add(tagChip);
+                        tagChip.Show();
+                    }
+                }
+            }
+            catch
+            {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.errorMode = true;
+                warning.effect = effect;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi , lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
         private void getBooksInfo()
         {
-            SqlConnection.Open();
-            SqlCommand command = new SqlCommand();
-            command.Connection = SqlConnection;
-            command.CommandText = ("Select * From [Books]");
-            SqlDataReader reader = command.ExecuteReader();
-            while (reader.Read())
+            try
             {
-                if (getReturnId == Convert.ToInt32(reader["Id"]))
+                SqlConnection.Open();
+                SqlCommand command = new SqlCommand();
+                command.Connection = SqlConnection;
+                command.CommandText = ("Select * From [Books]");
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
                 {
-                    bookNameLabel.Text = reader["Name"].ToString();
-                    detailsShortLabel.Text = reader["DETAIL"].ToString();
-                    writerNameLabel.Text = reader["WRITER"].ToString();
-                    string[] tag = reader["TAG"].ToString().Split(',');
-                    tag1 = tag;
-                    BookNumber = Convert.ToInt32(reader["STOCKNUMBER"]);
-                    Byte[] data = new Byte[0];
-                    data = (Byte[])(reader["COVER"]);
-                    photoPath = data;
-                    MemoryStream mem = new MemoryStream(PhotoPath);
-                    thumbPicturebox.Image = Image.FromStream(mem);
+                    if (getReturnId == Convert.ToInt32(reader["Id"]))
+                    {
+                        bookNameLabel.Text = reader["Name"].ToString();
+                        detailsShortLabel.Text = reader["DETAIL"].ToString();
+                        writerNameLabel.Text = reader["WRITER"].ToString();
+                        string[] tag = reader["TAG"].ToString().Split(',');
+                        tag1 = tag;
+                        BookNumber = Convert.ToInt32(reader["STOCKNUMBER"]);
+                        Byte[] data = new Byte[0];
+                        data = (Byte[])(reader["COVER"]);
+                        photoPath = data;
+                        MemoryStream mem = new MemoryStream(PhotoPath);
+                        thumbPicturebox.Image = Image.FromStream(mem);
+                    }
                 }
+                sqlConnection.Close();
             }
-            sqlConnection.Close();
+            catch
+            {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.errorMode = true;
+                warning.effect = effect;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
+            }
         }
         private void changeOpenpictureboxImage()
         {
-            if (AddReturn)
+            try
             {
-                openPicturebox.Image = Image.FromFile("images/plus_math_80px.png");
+                if (AddReturn)
+                {
+                    openPicturebox.Image = Image.FromFile("images/plus_math_80px.png");
+                }
+                else if (getReturn)
+                {
+                    openPicturebox.Image = Image.FromFile("images/return_book_80px.png");
+                }
             }
-            else if (getReturn)
-            {
-                openPicturebox.Image = Image.FromFile("images/return_book_80px.png");
-            }
+            catch { }
         }
         private void stockNumberShow()
         {
-            if (!IsShow)
+            try
             {
-                numberLabel.Visible = true;
-                numberLabel.Text = BookNumber.ToString();
-                thumbPicturebox.Image = null;
-                IsShow = true;
+                if (!IsShow)
+                {
+                    numberLabel.Visible = true;
+                    numberLabel.Text = BookNumber.ToString();
+                    thumbPicturebox.Image = null;
+                    IsShow = true;
+                }
+                else
+                {
+                    MemoryStream mem = new MemoryStream(PhotoPath);
+                    numberLabel.Visible = false;
+                    thumbPicturebox.Image = Image.FromStream(mem);
+                    IsShow = false;
+                }
             }
-            else
-            {
-                MemoryStream mem = new MemoryStream(PhotoPath);
-                numberLabel.Visible = false;
-                thumbPicturebox.Image = Image.FromStream(mem);
-                IsShow = false;
-            }
+            catch { }
         }
         private void thumbPicturebox_MouseUp(object sender, MouseEventArgs e)
         {

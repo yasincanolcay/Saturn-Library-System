@@ -30,39 +30,45 @@ namespace Saturn_Library_System
         }
         private void AddPublishHouse_Load(object sender, EventArgs e)
         {
-            if (EditMode)
+            try
             {
-                saveButton.Text = "Kaydet";
-                using(SqlCommand command = new SqlCommand("SELECT * From [PublishHouse]",sqlConnection))
+                if (EditMode)
                 {
-                    sqlConnection.Open();
-                    SqlDataReader reader = command.ExecuteReader();
-                    while (reader.Read())
+                    saveButton.Text = "Kaydet";
+                    using (SqlCommand command = new SqlCommand("SELECT * From [PublishHouse]", sqlConnection))
                     {
-                        if (Id == Convert.ToInt32(reader["Id"]))
+                        sqlConnection.Open();
+                        SqlDataReader reader = command.ExecuteReader();
+                        while (reader.Read())
                         {
-                            nameTextbox.Text = reader["Name"].ToString();
-                            certificateBox.Text = reader["Certificate"].ToString();
-                            addressBox.Text = reader["Address"].ToString();
-                            infoBox.Text = reader["Info"].ToString();
-                            contactBox.Text = reader["Contact"].ToString();
-                            linksBox.Text = reader["Links"].ToString();
-                            extraBox.Text = reader["Extra"].ToString();
-                            Byte[] data = new Byte[0];
-                            pictureByte = (Byte[])(reader["Icon"]);
-                            MemoryStream mem = new MemoryStream(pictureByte);
-                            profilePicturebox.Image = Image.FromStream(mem);
-                            profilePicturebox.BackgroundImage = Image.FromStream(mem);
-                            profilePicturebox.SizeMode = PictureBoxSizeMode.Zoom;
+                            if (Id == Convert.ToInt32(reader["Id"]))
+                            {
+                                nameTextbox.Text = reader["Name"].ToString();
+                                certificateBox.Text = reader["Certificate"].ToString();
+                                addressBox.Text = reader["Address"].ToString();
+                                infoBox.Text = reader["Info"].ToString();
+                                contactBox.Text = reader["Contact"].ToString();
+                                linksBox.Text = reader["Links"].ToString();
+                                extraBox.Text = reader["Extra"].ToString();
+                                Byte[] data = new Byte[0];
+                                pictureByte = (Byte[])(reader["Icon"]);
+                                MemoryStream mem = new MemoryStream(pictureByte);
+                                profilePicturebox.Image = Image.FromStream(mem);
+                                profilePicturebox.BackgroundImage = Image.FromStream(mem);
+                                profilePicturebox.SizeMode = PictureBoxSizeMode.Zoom;
+                            }
                         }
+                        reader.Close();
+                        sqlConnection.Close();
                     }
-                    reader.Close();
-                    sqlConnection.Close();
+                }
+                else
+                {
+                    PictureByte = ImageToStream(PicturePath);
                 }
             }
-            else
+            catch
             {
-                PictureByte = ImageToStream(PicturePath);
             }
         }
 
@@ -90,34 +96,48 @@ namespace Saturn_Library_System
         }
         private void saveData()
         {
-            if (nameTextbox.Text != string.Empty && certificateBox.Text != string.Empty && linksBox.Text != string.Empty && contactBox.Text != string.Empty && infoBox.Text != string.Empty)
+            try
             {
-                string query = "";
-                if (!EditMode)
+                if (nameTextbox.Text != string.Empty && certificateBox.Text != string.Empty && linksBox.Text != string.Empty && contactBox.Text != string.Empty && infoBox.Text != string.Empty)
                 {
-                    query = "INSERT INTO [PublishHouse] (Name,Certificate,Address,Info,Icon,Contact,Links,Extra) VALUES (@name,@certificate,@address,@info,@icon,@contact,@links,@extra)";
+                    string query = "";
+                    if (!EditMode)
+                    {
+                        query = "INSERT INTO [PublishHouse] (Name,Certificate,Address,Info,Icon,Contact,Links,Extra) VALUES (@name,@certificate,@address,@info,@icon,@contact,@links,@extra)";
+                    }
+                    else
+                    {
+                        query = "UPDATE PublishHouse SET Name=@name,Certificate=@certificate,Address=@address,Info=@info,Icon=@icon,Contact=@contact,Links=links,Extra=@extra where Id=@id";
+                    }
+                    using (SqlCommand command = new SqlCommand(query, sqlConnection))
+                    {
+                        command.Parameters.Clear();
+                        if (editMode)
+                            command.Parameters.AddWithValue("@id", Id);
+                        command.Parameters.AddWithValue("@name", nameTextbox.Text);
+                        command.Parameters.AddWithValue("@certificate", certificateBox.Text);
+                        command.Parameters.AddWithValue("@address", addressBox.Text);
+                        command.Parameters.AddWithValue("@info", infoBox.Text);
+                        command.Parameters.AddWithValue("@icon", PictureByte);
+                        command.Parameters.AddWithValue("@contact", contactBox.Text);
+                        command.Parameters.AddWithValue("@links", linksBox.Text);
+                        command.Parameters.AddWithValue("@extra", extraBox.Text);
+                        sqlConnection.Open();
+                        command.ExecuteNonQuery();
+                        sqlConnection.Close();
+                    }
                 }
-                else
-                {
-                    query = "UPDATE PublishHouse SET Name=@name,Certificate=@certificate,Address=@address,Info=@info,Icon=@icon,Contact=@contact,Links=links,Extra=@extra where Id=@id";
-                }
-                using (SqlCommand command = new SqlCommand(query, sqlConnection))
-                {
-                    command.Parameters.Clear();
-                    if (editMode)
-                        command.Parameters.AddWithValue("@id", Id);
-                    command.Parameters.AddWithValue("@name", nameTextbox.Text);
-                    command.Parameters.AddWithValue("@certificate", certificateBox.Text);
-                    command.Parameters.AddWithValue("@address", addressBox.Text);
-                    command.Parameters.AddWithValue("@info", infoBox.Text);
-                    command.Parameters.AddWithValue("@icon", PictureByte);
-                    command.Parameters.AddWithValue("@contact", contactBox.Text);
-                    command.Parameters.AddWithValue("@links", linksBox.Text);
-                    command.Parameters.AddWithValue("@extra", extraBox.Text);
-                    sqlConnection.Open();
-                    command.ExecuteNonQuery();
-                    sqlConnection.Close();
-                }
+            }
+            catch
+            {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.errorMode = true;
+                warning.effect = effect;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Kayıt yapılırken bir hata oluştu, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
         private byte[] ImageToStream(string fileName)

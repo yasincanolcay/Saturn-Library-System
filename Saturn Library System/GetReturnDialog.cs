@@ -39,25 +39,39 @@ namespace Saturn_Library_System
         }
         private void loadPage()
         {
-            ReturnPage page = new ReturnPage();
-            page.TopLevel = false;
-            page.Dock = DockStyle.Fill;
-            page.onUsers = onUsers;
-            page.Id = Id;
-            page.totalReturn = totalReturn;
-            page.booksCard = booksCard;
-            page.addLoss = addLoss;
-            page.powColor = powColor;
-            page.lightColor = lightColor;
-            page.foreColor = foreColor;
-            page.panel1.BackColor = lightColor;
-            page.flowLayoutPanel1.BackColor = lightColor;
-            page.BackColor = lightColor;
-            pageViewerPanel.BackColor = lightColor;
-            page.admin = admin;
-            page.moderator = moderator;
-            pageViewerPanel.Controls.Add(page);
-            page.Show();
+            try
+            {
+                ReturnPage page = new ReturnPage();
+                page.TopLevel = false;
+                page.Dock = DockStyle.Fill;
+                page.onUsers = onUsers;
+                page.Id = Id;
+                page.totalReturn = totalReturn;
+                page.booksCard = booksCard;
+                page.addLoss = addLoss;
+                page.powColor = powColor;
+                page.lightColor = lightColor;
+                page.foreColor = foreColor;
+                page.panel1.BackColor = lightColor;
+                page.flowLayoutPanel1.BackColor = lightColor;
+                page.BackColor = lightColor;
+                pageViewerPanel.BackColor = lightColor;
+                page.admin = admin;
+                page.moderator = moderator;
+                pageViewerPanel.Controls.Add(page);
+                page.Show();
+            }
+            catch
+            {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.errorMode = true;
+                warning.effect = effect;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
+            }
         }
 
         private void closeButton_Click(object sender, EventArgs e)

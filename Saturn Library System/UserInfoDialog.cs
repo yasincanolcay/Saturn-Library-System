@@ -37,28 +37,42 @@ namespace Saturn_Library_System
         }
         private void editInfo()
         {
-            if (!editMode)
+            try
             {
-                infoDetailBox.ReadOnly = false;
-                editPicturebox.Image = Image.FromFile("usercardImages/save_30px.png");
-                editMode = true;
-            }
-            else
-            {
-                editPicturebox.Image = Image.FromFile("usercardImages/edit_50px.png");
-                editMode = false;
-                string query = "UPDATE Users SET" + " " + updateParameter + "= @parameters where Id = @id";
-
-                using (SqlCommand command = new SqlCommand(query, sqlConnection))
+                if (!editMode)
                 {
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@id", Id);
-                    command.Parameters.AddWithValue("@parameters", infoDetailBox.Text);
-                    sqlConnection.Open();
-                    command.ExecuteNonQuery();
-                    sqlConnection.Close();
+                    infoDetailBox.ReadOnly = false;
+                    editPicturebox.Image = Image.FromFile("usercardImages/save_30px.png");
+                    editMode = true;
                 }
-                infoDetailBox.ReadOnly = true;
+                else
+                {
+                    editPicturebox.Image = Image.FromFile("usercardImages/edit_50px.png");
+                    editMode = false;
+                    string query = "UPDATE Users SET" + " " + updateParameter + "= @parameters where Id = @id";
+
+                    using (SqlCommand command = new SqlCommand(query, sqlConnection))
+                    {
+                        command.Parameters.Clear();
+                        command.Parameters.AddWithValue("@id", Id);
+                        command.Parameters.AddWithValue("@parameters", infoDetailBox.Text);
+                        sqlConnection.Open();
+                        command.ExecuteNonQuery();
+                        sqlConnection.Close();
+                    }
+                    infoDetailBox.ReadOnly = true;
+                }
+            }
+            catch
+            {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.effect = effect;
+                warning.errorMode = true;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Düzenleme işlemi başarısız oldu, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
 

@@ -313,6 +313,14 @@ namespace Saturn_Library_System
                 }
                 catch
                 {
+                    MaterialEffect effect = new MaterialEffect();
+                    effect.Show();
+                    WarningCard warning = new WarningCard();
+                    warning.errorMode = true;
+                    warning.effect = effect;
+                    warning.fullNameLabel.Text = "HATA";
+                    warning.emailLabel.Text = "Kayıt yapılırken bir hata oluştu, lütfen tekrar deneyiniz.";
+                    warning.ShowDialog();
                 }
             }
         }
@@ -362,56 +370,62 @@ namespace Saturn_Library_System
 
         private void tagTextbox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
+            try
             {
-                if (MaxTag < 4)
+                if (e.KeyCode == Keys.Enter)
                 {
-                    if (!C.Contains(tagTextbox.Text))
+                    if (MaxTag < 4)
                     {
-                        C.Add(tagTextbox.Text);
-                        if (!ClearTag)
+                        if (!C.Contains(tagTextbox.Text))
                         {
-                            tableLayoutPanel1.Controls.Clear();
-                            ClearTag = true;
+                            C.Add(tagTextbox.Text);
+                            if (!ClearTag)
+                            {
+                                tableLayoutPanel1.Controls.Clear();
+                                ClearTag = true;
+                            }
+                            Guna.UI2.WinForms.Guna2Chip chip = new Guna.UI2.WinForms.Guna2Chip();
+                            chip.FillColor = Color.Chocolate;
+                            chip.Text = C.Last();
+                            tableLayoutPanel1.Controls.Add(chip);
+                            chip.Show();
+                            tagTextbox.Clear();
+                            MaxTag++;
                         }
-                        Guna.UI2.WinForms.Guna2Chip chip = new Guna.UI2.WinForms.Guna2Chip();
-                        chip.FillColor = Color.Chocolate;
-                        chip.Text = C.Last();
-                        tableLayoutPanel1.Controls.Add(chip);
-                        chip.Show();
-                        tagTextbox.Clear();
-                        MaxTag++;
                     }
                 }
             }
-        }
-
-        private void tagTextbox_TextChanged(object sender, EventArgs e)
-        {
-
-            
+            catch
+            {
+            }
         }
 
         private void tableLayoutPanel1_ControlRemoved(object sender, ControlEventArgs e)
         {
-            if (ClearTag)
+            try
             {
-                C.Remove(e.Control.Text);
-                if (C.Count > 0)
+                if (ClearTag)
                 {
-                    MaxTag--;
+                    C.Remove(e.Control.Text);
+                    if (C.Count > 0)
+                    {
+                        MaxTag--;
 
+                    }
+                    else
+                    {
+                        MaxTag = 0;
+                        ClearTag = false;
+                        Guna.UI2.WinForms.Guna2Chip chip = new Guna.UI2.WinForms.Guna2Chip();
+                        chip.FillColor = Color.Chocolate;
+                        chip.Text = "(boş)";
+                        tableLayoutPanel1.Controls.Add(chip);
+                        chip.Show();
+                    }
                 }
-                else
-                {
-                    MaxTag = 0;
-                    ClearTag = false;
-                    Guna.UI2.WinForms.Guna2Chip chip = new Guna.UI2.WinForms.Guna2Chip();
-                    chip.FillColor = Color.Chocolate;
-                    chip.Text =  "(boş)";
-                    tableLayoutPanel1.Controls.Add(chip);
-                    chip.Show();
-                }
+            }
+            catch
+            {
             }
         }
 
@@ -498,13 +512,19 @@ namespace Saturn_Library_System
 
         private void isbnTextbox_TextChanged(object sender, EventArgs e)
         {
-            if (autoCompleteIsbn&&isbnTextbox.Text!=string.Empty)
+            try
             {
-                isbnTextbox.IconRight = Image.FromFile("images/ok_30px.png");
+                if (autoCompleteIsbn && isbnTextbox.Text != string.Empty)
+                {
+                    isbnTextbox.IconRight = Image.FromFile("images/ok_30px.png");
+                }
+                else
+                {
+                    isbnTextbox.IconRight = null;
+                }
             }
-            else
+            catch
             {
-                isbnTextbox.IconRight = null;
             }
         }
     }

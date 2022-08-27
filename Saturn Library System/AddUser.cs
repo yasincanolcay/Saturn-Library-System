@@ -54,52 +54,66 @@ namespace Saturn_Library_System
 
         private void saveButton_Click(object sender, EventArgs e)
         {
-            if (nameTextbox.Text!=string.Empty && surnameBox.Text!=string.Empty&&countryIdBox.Text!=string.Empty&&addressBox.Text!=string.Empty&&phoneNumberbox.Text!=string.Empty&&schoolBox.Text!= string.Empty&&languageBox.Text!=string.Empty&&housePhoneBox.Text!=string.Empty&&emailBox.Text!=string.Empty)
+            try
             {
-                SqlConnection sqlConnection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + "'" + Application.StartupPath + "\\SaturnDatabase.mdf'" + ";Integrated Security=True");
+                if (nameTextbox.Text != string.Empty && surnameBox.Text != string.Empty && countryIdBox.Text != string.Empty && addressBox.Text != string.Empty && phoneNumberbox.Text != string.Empty && schoolBox.Text != string.Empty && languageBox.Text != string.Empty && housePhoneBox.Text != string.Empty && emailBox.Text != string.Empty)
+                {
+                    SqlConnection sqlConnection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + "'" + Application.StartupPath + "\\SaturnDatabase.mdf'" + ";Integrated Security=True");
 
-                string query = "";
-                if (!editMode)
-                {
-                    query = "INSERT INTO [Users] (Name,Surname,CountryIdNo,Address,Phone,School,Language,HousePhone,Email,Blocked,ProfilePicture,Medal,Score,Trust,totalBook,totalReturn,TotalPage,TotalBlocked,BlockedRank) VALUES (@Name,@Surname,@CountryIdNo,@Address,@Phone,@School,@Language,@HousePhone,@Email,@blocked,@Profile,@Medal,@Score,@Trust,@totalBook,@totalReturn,@TotalPage,@TotalBlocked,@blockedRank)";
+                    string query = "";
+                    if (!editMode)
+                    {
+                        query = "INSERT INTO [Users] (Name,Surname,CountryIdNo,Address,Phone,School,Language,HousePhone,Email,Blocked,ProfilePicture,Medal,Score,Trust,totalBook,totalReturn,TotalPage,TotalBlocked,BlockedRank) VALUES (@Name,@Surname,@CountryIdNo,@Address,@Phone,@School,@Language,@HousePhone,@Email,@blocked,@Profile,@Medal,@Score,@Trust,@totalBook,@totalReturn,@TotalPage,@TotalBlocked,@blockedRank)";
+                    }
+                    else
+                    {
+                        query = "UPDATE Users SET Name=@Name,Surname=@Surname,CountryIdNo=@CountryIdNo,Address=@Address,Phone=@Phone,School=@School,Language=@Language,HousePhone=@HousePhone,Email=@Email,Blocked=@Blocked,ProfilePicture=@Profile,Medal=@Medal,Score=@Score,Trust=@Trust,totalBook=@totalBook,totalReturn=@totalReturn,TotalPage=@TotalPage,TotalBlocked=@TotalBlocked,BlockedRank=@blockedRank where Id=@id";
+                    }
+                    using (SqlCommand command = new SqlCommand(query, sqlConnection))
+                    {
+                        command.Parameters.Clear();
+                        if (editMode)
+                            command.Parameters.AddWithValue("@id", Id);
+                        command.Parameters.AddWithValue("@Name", nameTextbox.Text);
+                        command.Parameters.AddWithValue("@Surname", surnameBox.Text);
+                        command.Parameters.AddWithValue("@CountryIdNo", countryIdBox.Text);
+                        command.Parameters.AddWithValue("@Address", addressBox.Text);
+                        command.Parameters.AddWithValue("@Phone", phoneNumberbox.Text);
+                        command.Parameters.AddWithValue("@School", schoolBox.Text);
+                        command.Parameters.AddWithValue("@Language", languageBox.Text);
+                        command.Parameters.AddWithValue("@HousePhone", housePhoneBox.Text);
+                        command.Parameters.AddWithValue("@Email", emailBox.Text);
+                        command.Parameters.AddWithValue("@blocked", blocked);
+                        command.Parameters.AddWithValue("@Profile", PictureByte);
+                        command.Parameters.AddWithValue("@Medal", medal);
+                        command.Parameters.AddWithValue("@Score", score);
+                        command.Parameters.AddWithValue("@Trust", trust);
+                        command.Parameters.AddWithValue("@totalBook", totalbook);
+                        command.Parameters.AddWithValue("@totalReturn", totalReturn);
+                        command.Parameters.AddWithValue("@TotalPage", totalPage);
+                        command.Parameters.AddWithValue("@TotalBlocked", totalBlocked);
+                        command.Parameters.AddWithValue("@blockedRank", blockedRank);
+                        sqlConnection.Open();
+                        command.ExecuteNonQuery();
+                        sqlConnection.Close();
+                    }
+                    saveButton.Visible = false;
+                    loadingProgress.Visible = true;
+                    loadingProgress.Start();
+                    loadingTimer.Enabled = true;
+                    loadingTimer.Start();
                 }
-                else
-                {
-                    query = "UPDATE Users SET Name=@Name,Surname=@Surname,CountryIdNo=@CountryIdNo,Address=@Address,Phone=@Phone,School=@School,Language=@Language,HousePhone=@HousePhone,Email=@Email,Blocked=@Blocked,ProfilePicture=@Profile,Medal=@Medal,Score=@Score,Trust=@Trust,totalBook=@totalBook,totalReturn=@totalReturn,TotalPage=@TotalPage,TotalBlocked=@TotalBlocked,BlockedRank=@blockedRank where Id=@id";
-                }
-                using (SqlCommand command = new SqlCommand(query, sqlConnection))
-                {
-                    command.Parameters.Clear();
-                    if (editMode)
-                        command.Parameters.AddWithValue("@id",Id);
-                    command.Parameters.AddWithValue("@Name", nameTextbox.Text);
-                    command.Parameters.AddWithValue("@Surname", surnameBox.Text);
-                    command.Parameters.AddWithValue("@CountryIdNo", countryIdBox.Text);
-                    command.Parameters.AddWithValue("@Address", addressBox.Text);
-                    command.Parameters.AddWithValue("@Phone", phoneNumberbox.Text);
-                    command.Parameters.AddWithValue("@School", schoolBox.Text);
-                    command.Parameters.AddWithValue("@Language", languageBox.Text);
-                    command.Parameters.AddWithValue("@HousePhone", housePhoneBox.Text);
-                    command.Parameters.AddWithValue("@Email", emailBox.Text);
-                    command.Parameters.AddWithValue("@blocked", blocked);
-                    command.Parameters.AddWithValue("@Profile", PictureByte);
-                    command.Parameters.AddWithValue("@Medal", medal);
-                    command.Parameters.AddWithValue("@Score", score);
-                    command.Parameters.AddWithValue("@Trust", trust);
-                    command.Parameters.AddWithValue("@totalBook", totalbook);
-                    command.Parameters.AddWithValue("@totalReturn", totalReturn);
-                    command.Parameters.AddWithValue("@TotalPage", totalPage);
-                    command.Parameters.AddWithValue("@TotalBlocked", totalBlocked);
-                    command.Parameters.AddWithValue("@blockedRank", blockedRank);
-                    sqlConnection.Open();
-                    command.ExecuteNonQuery();
-                    sqlConnection.Close();
-                }
-                saveButton.Visible = false;
-                loadingProgress.Visible = true;
-                loadingProgress.Start();
-                loadingTimer.Enabled = true;
-                loadingTimer.Start();
+            }
+            catch
+            {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.errorMode = true;
+                warning.effect = effect;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Kayıt yapılırken bir hata oluştu, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
 
@@ -140,50 +154,64 @@ namespace Saturn_Library_System
 
         private void AddUser_Load(object sender, EventArgs e)
         {
-            if (File.Exists(PicturePath) && !editMode)
+            try
             {
-                PictureByte = ImageToStream(PicturePath);
-            }
-            if(editMode)
-            {
-                MemoryStream stream = new MemoryStream(pictureByte);
-                profilePicturebox.Image = Image.FromStream(stream);
-                profilePicturebox.BackgroundImage = Image.FromStream(stream);
-                profilePicturebox.SizeMode = PictureBoxSizeMode.Zoom;
-                using (SqlCommand command = new SqlCommand())
+                if (File.Exists(PicturePath) && !editMode)
                 {
-                    sqlConnection.Open();
-                    command.Connection = sqlConnection;
-                    command.CommandText = ("Select * From [Users]");
-                    SqlDataReader reader = command.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        if(Id == Convert.ToInt32(reader["Id"]))
-                        {
-                            nameTextbox.Text = reader["Name"].ToString();
-                            surnameBox.Text = reader["Surname"].ToString();
-                            countryIdBox.Text = reader["CountryIdNo"].ToString();
-                            phoneNumberbox.Text = reader["Phone"].ToString();
-                            schoolBox.Text = reader["School"].ToString();
-                            housePhoneBox.Text = reader["HousePhone"].ToString();
-                            addressBox.Text = reader["Address"].ToString();
-                            languageBox.Text = reader["Language"].ToString();
-                            emailBox.Text = reader["Email"].ToString();
-                            blocked = Convert.ToInt32(reader["Blocked"]);
-                            totalbook = Convert.ToInt32(reader["totalBook"]);
-                            totalPage = Convert.ToInt32(reader["TotalPage"]);
-                            score = float.Parse(reader["Score"].ToString());
-                            medal = Convert.ToInt32(reader["Medal"]);
-                            trust = Convert.ToInt32(reader["Trust"]);
-                            totalReturn = Convert.ToInt32(reader["totalReturn"]);
-                            blockedRank = Convert.ToInt32(reader["BlockedRank"]);
-                            totalBlocked = 0;
-                            reader.Close();
-                            break;
-                        }
-                    }
-                    sqlConnection.Close();
+                    PictureByte = ImageToStream(PicturePath);
                 }
+                if (editMode)
+                {
+                    MemoryStream stream = new MemoryStream(pictureByte);
+                    profilePicturebox.Image = Image.FromStream(stream);
+                    profilePicturebox.BackgroundImage = Image.FromStream(stream);
+                    profilePicturebox.SizeMode = PictureBoxSizeMode.Zoom;
+                    using (SqlCommand command = new SqlCommand())
+                    {
+                        sqlConnection.Open();
+                        command.Connection = sqlConnection;
+                        command.CommandText = ("Select * From [Users]");
+                        SqlDataReader reader = command.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            if (Id == Convert.ToInt32(reader["Id"]))
+                            {
+                                nameTextbox.Text = reader["Name"].ToString();
+                                surnameBox.Text = reader["Surname"].ToString();
+                                countryIdBox.Text = reader["CountryIdNo"].ToString();
+                                phoneNumberbox.Text = reader["Phone"].ToString();
+                                schoolBox.Text = reader["School"].ToString();
+                                housePhoneBox.Text = reader["HousePhone"].ToString();
+                                addressBox.Text = reader["Address"].ToString();
+                                languageBox.Text = reader["Language"].ToString();
+                                emailBox.Text = reader["Email"].ToString();
+                                blocked = Convert.ToInt32(reader["Blocked"]);
+                                totalbook = Convert.ToInt32(reader["totalBook"]);
+                                totalPage = Convert.ToInt32(reader["TotalPage"]);
+                                score = float.Parse(reader["Score"].ToString());
+                                medal = Convert.ToInt32(reader["Medal"]);
+                                trust = Convert.ToInt32(reader["Trust"]);
+                                totalReturn = Convert.ToInt32(reader["totalReturn"]);
+                                blockedRank = Convert.ToInt32(reader["BlockedRank"]);
+                                totalBlocked = 0;
+                                reader.Close();
+                                break;
+                            }
+                        }
+                        sqlConnection.Close();
+                    }
+                }
+            }
+            catch
+            {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.errorMode = true;
+                warning.effect = effect;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
 

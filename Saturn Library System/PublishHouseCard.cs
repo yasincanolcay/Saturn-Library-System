@@ -25,64 +25,106 @@ namespace Saturn_Library_System
 
         private void PublishHouseCard_Load(object sender, EventArgs e)
         {
-            MemoryStream mem = new MemoryStream(photoByte);
-            profileBox.Image = Image.FromStream(mem);
-            profileBox.BackgroundImage = Image.FromStream(mem);
-        }
-
-        private void pictureBox2_Click(object sender, EventArgs e)
-        {
-            if (admin)
+            try
+            {
+                MemoryStream mem = new MemoryStream(photoByte);
+                profileBox.Image = Image.FromStream(mem);
+                profileBox.BackgroundImage = Image.FromStream(mem);
+            }
+            catch
             {
                 MaterialEffect effect = new MaterialEffect();
                 effect.Show();
                 WarningCard warning = new WarningCard();
+                warning.errorMode = true;
                 warning.effect = effect;
-                warning.deleteHouse = true;
-                warning.Id = Id;
-                warning.fullNameLabel.Text = "Yayınevi Sil";
-                warning.emailLabel.Text = "Bu yayınevi kalıcı olarak silinecek.";
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Fotoğraf yüklenemiyor, lütfen tekrar deneyiniz.";
                 warning.ShowDialog();
             }
-            else
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (admin)
+                {
+                    MaterialEffect effect = new MaterialEffect();
+                    effect.Show();
+                    WarningCard warning = new WarningCard();
+                    warning.effect = effect;
+                    warning.deleteHouse = true;
+                    warning.Id = Id;
+                    warning.fullNameLabel.Text = "Yayınevi Sil";
+                    warning.emailLabel.Text = "Bu yayınevi kalıcı olarak silinecek.";
+                    warning.ShowDialog();
+                }
+                else
+                {
+                    MaterialEffect effect = new MaterialEffect();
+                    effect.Show();
+                    WarningCard warning = new WarningCard();
+                    warning.effect = effect;
+                    warning.errorMode = true;
+                    warning.fullNameLabel.Text = "Erişim Reddedildi";
+                    warning.emailLabel.Text = "Yayınevini silmek için Admin olmanız gerekmektedir";
+                    warning.ShowDialog();
+                }
+            }
+            catch
             {
                 MaterialEffect effect = new MaterialEffect();
                 effect.Show();
                 WarningCard warning = new WarningCard();
                 warning.effect = effect;
                 warning.errorMode = true;
-                warning.fullNameLabel.Text = "Erişim Reddedildi";
-                warning.emailLabel.Text = "Yayınevini silmek için Admin olmanız gerekmektedir";
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
                 warning.ShowDialog();
             }
         }
 
         private void pictureBox6_Click(object sender, EventArgs e)
         {
-            if (admin || moderator)
+            try
             {
-                AddPublishHouse edit = new AddPublishHouse();
-                edit.EditMode = true;
-                edit.Id = Id;
-                edit.BackColor = lightColor;
-                edit.nameTextbox.FillColor = lightColor;
-                edit.certificateBox.FillColor = lightColor;
-                edit.linksBox.FillColor = lightColor;
-                edit.contactBox.FillColor = lightColor;
-                edit.addressBox.FillColor = lightColor;
-                edit.infoBox.FillColor = lightColor;
-                edit.extraBox.FillColor = lightColor;
-                edit.Show();
+                if (admin || moderator)
+                {
+                    AddPublishHouse edit = new AddPublishHouse();
+                    edit.EditMode = true;
+                    edit.Id = Id;
+                    edit.BackColor = lightColor;
+                    edit.nameTextbox.FillColor = lightColor;
+                    edit.certificateBox.FillColor = lightColor;
+                    edit.linksBox.FillColor = lightColor;
+                    edit.contactBox.FillColor = lightColor;
+                    edit.addressBox.FillColor = lightColor;
+                    edit.infoBox.FillColor = lightColor;
+                    edit.extraBox.FillColor = lightColor;
+                    edit.Show();
+                }
+                else
+                {
+                    MaterialEffect effect = new MaterialEffect();
+                    effect.Show();
+                    WarningCard warning = new WarningCard();
+                    warning.effect = effect;
+                    warning.errorMode = true;
+                    warning.fullNameLabel.Text = "Erişim Reddedildi";
+                    warning.emailLabel.Text = "Yayınevini düzenleyebilmek için Admin veya Moderator olmanız gerekmektedir";
+                    warning.ShowDialog();
+                }
             }
-            else
+            catch
             {
                 MaterialEffect effect = new MaterialEffect();
                 effect.Show();
                 WarningCard warning = new WarningCard();
                 warning.effect = effect;
                 warning.errorMode = true;
-                warning.fullNameLabel.Text = "Erişim Reddedildi";
-                warning.emailLabel.Text = "Yayınevini düzenleyebilmek için Admin veya Moderator olmanız gerekmektedir";
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
                 warning.ShowDialog();
             }
         }

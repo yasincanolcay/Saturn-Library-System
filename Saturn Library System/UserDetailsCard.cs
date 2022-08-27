@@ -47,123 +47,181 @@ namespace Saturn_Library_System
 
         private void UserDetailsCard_Load(object sender, EventArgs e)
         {
-            if (addReturn)
+            try
             {
-                pictureBox5.Visible = false;
+                if (addReturn)
+                {
+                    pictureBox5.Visible = false;
+                }
+                if (!getReturn && !addLoss)
+                {
+                    MedalList medalList = new MedalList();
+                    MemoryStream mem = new MemoryStream(photoPath);
+                    profileBox.Image = Image.FromStream(mem);
+                    profileBox.BackgroundImage = Image.FromStream(mem);
+                    medalPicturebox.Image = Image.FromFile(medalList.Medals[medal]);
+                }
+                else
+                {
+                    getUsersInfo();
+                }
+                changeOpenpictureboxImage();
+                loadInfo("", "", false);
             }
-            if (!getReturn)
+            catch
             {
-                MedalList medalList = new MedalList();
-                MemoryStream mem = new MemoryStream(photoPath);
-                profileBox.Image = Image.FromStream(mem);
-                profileBox.BackgroundImage = Image.FromStream(mem);
-                medalPicturebox.Image = Image.FromFile(medalList.Medals[medal]);
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.effect = effect;
+                warning.errorMode = true;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
-            else
-            {
-                getUsersInfo();
-            }
-            changeOpenpictureboxImage();
-            loadInfo("", "",false);
         }
         private void loadReturnBooks()
         {
-            int returnBooks = 0;
-            sqlConnection.Open();
-            SqlCommand command = new SqlCommand();
-            command.Connection = sqlConnection;
-            command.CommandText = ("Select * From [ReturnBooks]");
-            SqlDataReader reader = command.ExecuteReader();
-            while (reader.Read())
+            try
             {
-                if(Id == Convert.ToInt32(reader["UserId"]))
-                {
-                    returnBooks++;
-                }
-            }
-            sqlConnection.Close();
-            returnNumberLabel.Text = returnBooks.ToString();
-        }
-        private void getUsersInfo()
-        {
-            hatırlatıcıEkleToolStripMenuItem.Enabled = false;
-            using(SqlCommand command = new SqlCommand())
-            {
+                int returnBooks = 0;
                 sqlConnection.Open();
-                command.Connection = sqlConnection;
-                command.CommandText = ("Select * From [Users]");
-                SqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    if (Id == Convert.ToInt32(reader["Id"]))
-                    {
-                        MedalList medalList = new MedalList();
-                        Byte[] data = new Byte[0];
-                        data = (Byte[])(reader["ProfilePicture"]);
-                        photoPath = data;
-                        MemoryStream mem = new MemoryStream(photoPath);
-                        profileBox.Image = Image.FromStream(mem);
-                        profileBox.BackgroundImage = Image.FromStream(mem);
-                        fullnameLabel.Text = reader["Name"].ToString() + " " + reader["Surname"].ToString();
-                        emailLabel.Text = reader["Email"].ToString();
-                        scoreRatingStar.Value = float.Parse(reader["Score"].ToString());
-                        medalPicturebox.Image = Image.FromFile(medalList.Medals[Convert.ToInt32(reader["Medal"])]);
-                        schoolNameLabel.Text = reader["School"].ToString();
-                        addressDetailLabel.Text = reader["Address"].ToString();
-                        pageNumberLabel.Text = reader["TotalPage"].ToString();
-                        if (Convert.ToInt32(reader["Blocked"]) == 1)
-                        {
-                            pictureBox5.Enabled = false;
-                            toolStripMenuItem2.Text = "Kara Listeden Çıkar";
-                            isBlocked = true;
-                        }
-                    }
-                }
-                reader.Close();
-            }
-            using(SqlCommand command = new SqlCommand())
-            {
+                SqlCommand command = new SqlCommand();
                 command.Connection = sqlConnection;
                 command.CommandText = ("Select * From [ReturnBooks]");
                 SqlDataReader reader = command.ExecuteReader();
-                int totalReturn = 0;
                 while (reader.Read())
                 {
                     if (Id == Convert.ToInt32(reader["UserId"]))
                     {
-                        totalReturn++;
+                        returnBooks++;
                     }
                 }
-                returnNumberLabel.Text = totalReturn.ToString();
-                reader.Close();
                 sqlConnection.Close();
+                returnNumberLabel.Text = returnBooks.ToString();
+            }
+            catch
+            {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.effect = effect;
+                warning.errorMode = true;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
+            }
+        }
+        private void getUsersInfo()
+        {
+            try
+            {
+
+
+                hatırlatıcıEkleToolStripMenuItem.Enabled = false;
+                using (SqlCommand command = new SqlCommand())
+                {
+                    sqlConnection.Open();
+                    command.Connection = sqlConnection;
+                    command.CommandText = ("Select * From [Users]");
+                    SqlDataReader reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        if (Id == Convert.ToInt32(reader["Id"]))
+                        {
+                            MedalList medalList = new MedalList();
+                            Byte[] data = new Byte[0];
+                            data = (Byte[])(reader["ProfilePicture"]);
+                            photoPath = data;
+                            MemoryStream mem = new MemoryStream(photoPath);
+                            profileBox.Image = Image.FromStream(mem);
+                            profileBox.BackgroundImage = Image.FromStream(mem);
+                            fullnameLabel.Text = reader["Name"].ToString() + " " + reader["Surname"].ToString();
+                            emailLabel.Text = reader["Email"].ToString();
+                            scoreRatingStar.Value = float.Parse(reader["Score"].ToString());
+                            medalPicturebox.Image = Image.FromFile(medalList.Medals[Convert.ToInt32(reader["Medal"])]);
+                            schoolNameLabel.Text = reader["School"].ToString();
+                            addressDetailLabel.Text = reader["Address"].ToString();
+                            pageNumberLabel.Text = reader["TotalPage"].ToString();
+                            if (Convert.ToInt32(reader["Blocked"]) == 1)
+                            {
+                                pictureBox5.Enabled = false;
+                                toolStripMenuItem2.Text = "Kara Listeden Çıkar";
+                                isBlocked = true;
+                            }
+                        }
+                    }
+                    reader.Close();
+                }
+                using (SqlCommand command = new SqlCommand())
+                {
+                    command.Connection = sqlConnection;
+                    command.CommandText = ("Select * From [ReturnBooks]");
+                    SqlDataReader reader = command.ExecuteReader();
+                    int totalReturn = 0;
+                    while (reader.Read())
+                    {
+                        if (Id == Convert.ToInt32(reader["UserId"]))
+                        {
+                            totalReturn++;
+                        }
+                    }
+                    returnNumberLabel.Text = totalReturn.ToString();
+                    reader.Close();
+                    sqlConnection.Close();
+                }
+            }
+            catch
+            {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.effect = effect;
+                warning.errorMode = true;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
         private void changeOpenpictureboxImage()
         {
-            if (addReturn || addLoss)
+            try
             {
-                if (admin || moderator)
+                if (addReturn || addLoss)
                 {
-                    pictureBox6.Image = Image.FromFile("images/plus_math_80px.png");
+                    if (admin || moderator)
+                    {
+                        pictureBox6.Image = Image.FromFile("images/plus_math_80px.png");
 
+                    }
+                    else
+                    {
+                        pictureBox6.Image = Image.FromFile("images/lock_30px.png");
+
+                    }
                 }
-                else
+                else if (getReturn)
                 {
-                    pictureBox6.Image = Image.FromFile("images/lock_30px.png");
-
+                    if (admin || moderator)
+                    {
+                        pictureBox6.Image = Image.FromFile("images/return_book_80px.png");
+                    }
+                    else
+                    {
+                        pictureBox6.Image = Image.FromFile("images/lock_30px.png");
+                    }
                 }
             }
-            else if (getReturn)
+            catch
             {
-                if (admin || moderator)
-                {
-                    pictureBox6.Image = Image.FromFile("images/return_book_80px.png");
-                }
-                else
-                {
-                    pictureBox6.Image = Image.FromFile("images/lock_30px.png");
-                }
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.effect = effect;
+                warning.errorMode = true;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
         private void pictureBox2_Click(object sender, EventArgs e)
@@ -222,6 +280,14 @@ namespace Saturn_Library_System
             }
             catch
             {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.effect = effect;
+                warning.errorMode = true;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
 
@@ -246,172 +312,49 @@ namespace Saturn_Library_System
 
         private void pictureBox6_Click(object sender, EventArgs e)
         {
-            if (!addReturn&&!getReturn&&!addLoss)
+            try
             {
-                loadProfile();
-            }
-            else if (getReturn)
-            {
-                if (admin || moderator)
+                if (!addReturn && !getReturn && !addLoss)
                 {
-                    using (SqlCommand command = new SqlCommand())
+                    loadProfile();
+                }
+                else if (getReturn)
+                {
+                    if (admin || moderator)
                     {
-                        command.Connection = sqlConnection;
-                        command.CommandText = "delete ReturnBooks where Id='" + bookId + "'";
-                        sqlConnection.Open();
-                        command.ExecuteNonQuery();
-                        sqlConnection.Close();
-                    }
-                    int totalReturn = 0;
-                    using (SqlCommand command = new SqlCommand())
-                    {
-                        sqlConnection.Open();
-                        command.Connection = sqlConnection;
-                        command.CommandText = ("Select * From [Users]");
-                        SqlDataReader reader2 = command.ExecuteReader();
-                        while (reader2.Read())
+                        using (SqlCommand command = new SqlCommand())
                         {
-                            if (Id == Convert.ToInt32(reader2["Id"]))
-                            {
-                                totalReturn = Convert.ToInt32(reader2["totalReturn"]);
-                            }
+                            command.Connection = sqlConnection;
+                            command.CommandText = "delete ReturnBooks where Id='" + bookId + "'";
+                            sqlConnection.Open();
+                            command.ExecuteNonQuery();
+                            sqlConnection.Close();
                         }
-                        reader2.Close();
-                        sqlConnection.Close();
-                    }
-                    string query = "UPDATE Users SET totalReturn=@totalReturn where Id=@id";
-                    using (SqlCommand command = new SqlCommand(query, sqlConnection))
-                    {
-                        command.Parameters.Clear();
-                        command.Parameters.AddWithValue("@id", Id);
-                        command.Parameters.AddWithValue("@totalReturn", totalReturn + 1);
-                        sqlConnection.Open();
-                        command.ExecuteNonQuery();
-                        sqlConnection.Close();
-                    }
-                    pictureBox6.Visible = false;
-                    loadingProgress.Visible = true;
-                    loadingProgress.Start();
-                    loadingTimer.Enabled = true;
-                    loadingTimer.Start();
-                    pictureBox6.Image = Image.FromFile("images/ok_30px.png");
-                    pictureBox6.Enabled = false;
-                }
-                else
-                {
-                    MaterialEffect effect = new MaterialEffect();
-                    effect.Show();
-                    WarningCard warning = new WarningCard();
-                    warning.effect = effect;
-                    warning.errorMode = true;
-                    warning.fullNameLabel.Text = "Erişim Reddedildi";
-                    warning.emailLabel.Text = "Emanet alabilmek için Admin veya Moderator olmanız gerekmektedir";
-                    warning.ShowDialog();
-                }
-            }
-            else if (addLoss)
-            {
-                if (admin || moderator)
-                {
-                    string query = "UPDATE ReturnBooks SET loss=@loss where Id=@id";
-                    using (SqlCommand command = new SqlCommand(query, sqlConnection))
-                    {
-                        command.Parameters.Clear();
-                        command.Parameters.AddWithValue("@id", bookId);
-                        command.Parameters.AddWithValue("@loss", 1);
-                        sqlConnection.Open();
-                        command.ExecuteNonQuery();
-                        sqlConnection.Close();
-                    }
-                    int loss = 0;
-                    using (SqlCommand command = new SqlCommand())
-                    {
-                        sqlConnection.Open();
-                        command.Connection = sqlConnection;
-                        command.CommandText = ("Select * From [Users]");
-                        SqlDataReader reader2 = command.ExecuteReader();
-                        while (reader2.Read())
-                        {
-                            if (Id == Convert.ToInt32(reader2["Id"]))
-                            {
-                                loss = Convert.ToInt32(reader2["LossBooks"]);
-                            }
-                        }
-                        reader2.Close();
-                        sqlConnection.Close();
-                    }
-                    query = "UPDATE Users SET LossBooks=@loss where Id=@id";
-                    using (SqlCommand command = new SqlCommand(query, sqlConnection))
-                    {
-                        command.Parameters.Clear();
-                        command.Parameters.AddWithValue("@id", Id);
-                        command.Parameters.AddWithValue("@loss", loss + 1);
-                        sqlConnection.Open();
-                        command.ExecuteNonQuery();
-                        sqlConnection.Close();
-                    }
-                    pictureBox6.Visible = false;
-                    loadingProgress.Visible = true;
-                    loadingProgress.Start();
-                    loadingTimer.Enabled = true;
-                    loadingTimer.Start();
-                    pictureBox6.Image = Image.FromFile("images/ok_30px.png");
-                    pictureBox6.Enabled = false;
-                }
-                else
-                {
-                    MaterialEffect effect = new MaterialEffect();
-                    effect.Show();
-                    WarningCard warning = new WarningCard();
-                    warning.effect = effect;
-                    warning.errorMode = true;
-                    warning.fullNameLabel.Text = "Erişim Reddedildi";
-                    warning.emailLabel.Text = "Kayıp kitap ekleyebilmek için Admin veya Moderator olmanız gerekmektedir";
-                    warning.ShowDialog();
-                }
-            }
-            else
-            {
-                if (admin || moderator)
-                {
-                    int totalReturn = 0;
-                    using (SqlCommand command = new SqlCommand())
-                    {
-                        sqlConnection.Open();
-                        command.Connection = sqlConnection;
-                        command.CommandText = ("Select * From [ReturnBooks]");
-                        SqlDataReader reader = command.ExecuteReader();
-                        while (reader.Read())
-                        {
-                            if (bookId == Convert.ToInt32(reader["BookId"]))
-                            {
-                                totalReturn++;
-                            }
-                        }
-                        reader.Close();
-                        sqlConnection.Close();
-                    }
-                    int totalStock = bookNumber - totalReturn;
-
-                    if (totalStock > 0)
-                    {
-                        int totalBook = 0;
-                        int totalPage = 0;
+                        int totalReturn = 0;
                         using (SqlCommand command = new SqlCommand())
                         {
                             sqlConnection.Open();
                             command.Connection = sqlConnection;
                             command.CommandText = ("Select * From [Users]");
-                            SqlDataReader reader = command.ExecuteReader();
-                            while (reader.Read())
+                            SqlDataReader reader2 = command.ExecuteReader();
+                            while (reader2.Read())
                             {
-                                if (Id == Convert.ToInt32(reader["Id"]))
+                                if (Id == Convert.ToInt32(reader2["Id"]))
                                 {
-                                    totalBook = Convert.ToInt32(reader["totalBook"]);
-                                    totalPage = Convert.ToInt32(reader["TotalPage"]);
+                                    totalReturn = Convert.ToInt32(reader2["totalReturn"]);
                                 }
                             }
-                            reader.Close();
+                            reader2.Close();
+                            sqlConnection.Close();
+                        }
+                        string query = "UPDATE Users SET totalReturn=@totalReturn where Id=@id";
+                        using (SqlCommand command = new SqlCommand(query, sqlConnection))
+                        {
+                            command.Parameters.Clear();
+                            command.Parameters.AddWithValue("@id", Id);
+                            command.Parameters.AddWithValue("@totalReturn", totalReturn + 1);
+                            sqlConnection.Open();
+                            command.ExecuteNonQuery();
                             sqlConnection.Close();
                         }
                         pictureBox6.Visible = false;
@@ -419,30 +362,167 @@ namespace Saturn_Library_System
                         loadingProgress.Start();
                         loadingTimer.Enabled = true;
                         loadingTimer.Start();
-                        string query = "UPDATE Users SET totalBook = @book, TotalPage=@page where Id = @id";
+                        pictureBox6.Image = Image.FromFile("images/ok_30px.png");
+                        pictureBox6.Enabled = false;
+                    }
+                    else
+                    {
+                        MaterialEffect effect = new MaterialEffect();
+                        effect.Show();
+                        WarningCard warning = new WarningCard();
+                        warning.effect = effect;
+                        warning.errorMode = true;
+                        warning.fullNameLabel.Text = "Erişim Reddedildi";
+                        warning.emailLabel.Text = "Emanet alabilmek için Admin veya Moderator olmanız gerekmektedir";
+                        warning.ShowDialog();
+                    }
+                }
+                else if (addLoss)
+                {
+                    if (admin || moderator)
+                    {
+                        string query = "UPDATE ReturnBooks SET loss=@loss where Id=@id";
                         using (SqlCommand command = new SqlCommand(query, sqlConnection))
                         {
                             command.Parameters.Clear();
-                            command.Parameters.AddWithValue("@id", Id);
-                            command.Parameters.AddWithValue("@book", totalBook + 1);
-                            command.Parameters.AddWithValue("@page", totalPage + page);
+                            command.Parameters.AddWithValue("@id", bookId);
+                            command.Parameters.AddWithValue("@loss", 1);
                             sqlConnection.Open();
                             command.ExecuteNonQuery();
                             sqlConnection.Close();
                         }
-                        query = "INSERT INTO [ReturnBooks] (BookId,UserId,TakeDate,TakeClock,loss) Values (@bookid,@userid,@takedate,@takeclock,@loss)";
+                        int loss = 0;
+                        using (SqlCommand command = new SqlCommand())
+                        {
+                            sqlConnection.Open();
+                            command.Connection = sqlConnection;
+                            command.CommandText = ("Select * From [Users]");
+                            SqlDataReader reader2 = command.ExecuteReader();
+                            while (reader2.Read())
+                            {
+                                if (Id == Convert.ToInt32(reader2["Id"]))
+                                {
+                                    loss = Convert.ToInt32(reader2["LossBooks"]);
+                                }
+                            }
+                            reader2.Close();
+                            sqlConnection.Close();
+                        }
+                        query = "UPDATE Users SET LossBooks=@loss where Id=@id";
                         using (SqlCommand command = new SqlCommand(query, sqlConnection))
                         {
                             command.Parameters.Clear();
-                            command.Parameters.AddWithValue("@bookid", bookId);
-                            command.Parameters.AddWithValue("@userid", Id);
-                            command.Parameters.AddWithValue("@takedate", takeDate);
-                            command.Parameters.AddWithValue("@takeclock", DateTime.Parse(clock));
-                            command.Parameters.AddWithValue("@loss", 0);
-
+                            command.Parameters.AddWithValue("@id", Id);
+                            command.Parameters.AddWithValue("@loss", loss + 1);
                             sqlConnection.Open();
                             command.ExecuteNonQuery();
                             sqlConnection.Close();
+                        }
+                        pictureBox6.Visible = false;
+                        loadingProgress.Visible = true;
+                        loadingProgress.Start();
+                        loadingTimer.Enabled = true;
+                        loadingTimer.Start();
+                        pictureBox6.Image = Image.FromFile("images/ok_30px.png");
+                        pictureBox6.Enabled = false;
+                    }
+                    else
+                    {
+                        MaterialEffect effect = new MaterialEffect();
+                        effect.Show();
+                        WarningCard warning = new WarningCard();
+                        warning.effect = effect;
+                        warning.errorMode = true;
+                        warning.fullNameLabel.Text = "Erişim Reddedildi";
+                        warning.emailLabel.Text = "Kayıp kitap ekleyebilmek için Admin veya Moderator olmanız gerekmektedir";
+                        warning.ShowDialog();
+                    }
+                }
+                else
+                {
+                    if (admin || moderator)
+                    {
+                        int totalReturn = 0;
+                        using (SqlCommand command = new SqlCommand())
+                        {
+                            sqlConnection.Open();
+                            command.Connection = sqlConnection;
+                            command.CommandText = ("Select * From [ReturnBooks]");
+                            SqlDataReader reader = command.ExecuteReader();
+                            while (reader.Read())
+                            {
+                                if (bookId == Convert.ToInt32(reader["BookId"]))
+                                {
+                                    totalReturn++;
+                                }
+                            }
+                            reader.Close();
+                            sqlConnection.Close();
+                        }
+                        int totalStock = bookNumber - totalReturn;
+
+                        if (totalStock > 0)
+                        {
+                            int totalBook = 0;
+                            int totalPage = 0;
+                            using (SqlCommand command = new SqlCommand())
+                            {
+                                sqlConnection.Open();
+                                command.Connection = sqlConnection;
+                                command.CommandText = ("Select * From [Users]");
+                                SqlDataReader reader = command.ExecuteReader();
+                                while (reader.Read())
+                                {
+                                    if (Id == Convert.ToInt32(reader["Id"]))
+                                    {
+                                        totalBook = Convert.ToInt32(reader["totalBook"]);
+                                        totalPage = Convert.ToInt32(reader["TotalPage"]);
+                                    }
+                                }
+                                reader.Close();
+                                sqlConnection.Close();
+                            }
+                            pictureBox6.Visible = false;
+                            loadingProgress.Visible = true;
+                            loadingProgress.Start();
+                            loadingTimer.Enabled = true;
+                            loadingTimer.Start();
+                            string query = "UPDATE Users SET totalBook = @book, TotalPage=@page where Id = @id";
+                            using (SqlCommand command = new SqlCommand(query, sqlConnection))
+                            {
+                                command.Parameters.Clear();
+                                command.Parameters.AddWithValue("@id", Id);
+                                command.Parameters.AddWithValue("@book", totalBook + 1);
+                                command.Parameters.AddWithValue("@page", totalPage + page);
+                                sqlConnection.Open();
+                                command.ExecuteNonQuery();
+                                sqlConnection.Close();
+                            }
+                            query = "INSERT INTO [ReturnBooks] (BookId,UserId,TakeDate,TakeClock,loss) Values (@bookid,@userid,@takedate,@takeclock,@loss)";
+                            using (SqlCommand command = new SqlCommand(query, sqlConnection))
+                            {
+                                command.Parameters.Clear();
+                                command.Parameters.AddWithValue("@bookid", bookId);
+                                command.Parameters.AddWithValue("@userid", Id);
+                                command.Parameters.AddWithValue("@takedate", takeDate);
+                                command.Parameters.AddWithValue("@takeclock", DateTime.Parse(clock));
+                                command.Parameters.AddWithValue("@loss", 0);
+
+                                sqlConnection.Open();
+                                command.ExecuteNonQuery();
+                                sqlConnection.Close();
+                            }
+                        }
+                        else
+                        {
+                            MaterialEffect effect = new MaterialEffect();
+                            effect.Show();
+                            WarningCard warning = new WarningCard();
+                            warning.effect = effect;
+                            warning.fullNameLabel.Text = "Hiç Kitap Yok";
+                            warning.emailLabel.Text = "Emanet verilecek kitap stokta kalmadı, lütfen emanetleri alın veya kitap ekleyin.";
+                            warning.errorMode = true;
+                            warning.ShowDialog();
                         }
                     }
                     else
@@ -451,23 +531,23 @@ namespace Saturn_Library_System
                         effect.Show();
                         WarningCard warning = new WarningCard();
                         warning.effect = effect;
-                        warning.fullNameLabel.Text = "Hiç Kitap Yok";
-                        warning.emailLabel.Text = "Emanet verilecek kitap stokta kalmadı, lütfen emanetleri alın veya kitap ekleyin.";
                         warning.errorMode = true;
+                        warning.fullNameLabel.Text = "Erişim Reddedildi";
+                        warning.emailLabel.Text = "Emanet verebilmek için Admin veya Moderator olmanız gerekmektedir";
                         warning.ShowDialog();
                     }
                 }
-                else
-                {
-                    MaterialEffect effect = new MaterialEffect();
-                    effect.Show();
-                    WarningCard warning = new WarningCard();
-                    warning.effect = effect;
-                    warning.errorMode = true;
-                    warning.fullNameLabel.Text = "Erişim Reddedildi";
-                    warning.emailLabel.Text = "Emanet verebilmek için Admin veya Moderator olmanız gerekmektedir";
-                    warning.ShowDialog();
-                }
+            }
+            catch
+            {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.effect = effect;
+                warning.errorMode = true;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
         private void loadProfile()
@@ -512,6 +592,7 @@ namespace Saturn_Library_System
                         users.trustProggress.Value = Convert.ToInt32(reader["Trust"]);
                         users.schoolAdressLabel.Text = reader["School"].ToString();
                         users.sortingChange = true;
+                        users.lightColor = lightColor;
                         usersPanel.Controls.Add(users);
                         guna2Transition1.Show(users);
                     }
@@ -520,6 +601,14 @@ namespace Saturn_Library_System
             }
             catch
             {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.effect = effect;
+                warning.errorMode = true;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bu profil yüklenemiyor, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
 
@@ -536,33 +625,47 @@ namespace Saturn_Library_System
 
         private void pictureBox5_Click(object sender, EventArgs e)
         {
-            if (admin || moderator)
+            try
             {
-                MaterialEffect effect = new MaterialEffect();
-                effect.Show();
-                AddReturn add = new AddReturn();
-                add.Effect = effect;
-                add.UserId = Id;
-                add.BookId = bookId;
-                add.GetBooksId = getBooksId;
-                add.OnUsersPage = true;
-                add.powColor = powColor;
-                add.lightColor = lightColor;
-                add.foreColor = foreColor;
-                add.BackColor = lightColor;
-                add.admin = admin;
-                add.moderator = moderator;
-                add.ShowDialog();
+                if (admin || moderator)
+                {
+                    MaterialEffect effect = new MaterialEffect();
+                    effect.Show();
+                    AddReturn add = new AddReturn();
+                    add.Effect = effect;
+                    add.UserId = Id;
+                    add.BookId = bookId;
+                    add.GetBooksId = getBooksId;
+                    add.OnUsersPage = true;
+                    add.powColor = powColor;
+                    add.lightColor = lightColor;
+                    add.foreColor = foreColor;
+                    add.BackColor = lightColor;
+                    add.admin = admin;
+                    add.moderator = moderator;
+                    add.ShowDialog();
+                }
+                else
+                {
+                    MaterialEffect effect = new MaterialEffect();
+                    effect.Show();
+                    WarningCard warning = new WarningCard();
+                    warning.effect = effect;
+                    warning.errorMode = true;
+                    warning.fullNameLabel.Text = "Erişim Reddedildi";
+                    warning.emailLabel.Text = "Emanet verebilmek için Admin veya Moderator olmanız gerekmektedir";
+                    warning.ShowDialog();
+                }
             }
-            else
+            catch
             {
                 MaterialEffect effect = new MaterialEffect();
                 effect.Show();
                 WarningCard warning = new WarningCard();
                 warning.effect = effect;
                 warning.errorMode = true;
-                warning.fullNameLabel.Text = "Erişim Reddedildi";
-                warning.emailLabel.Text = "Emanet verebilmek için Admin veya Moderator olmanız gerekmektedir";
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
                 warning.ShowDialog();
             }
         }

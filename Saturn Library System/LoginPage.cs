@@ -25,13 +25,27 @@ namespace Saturn_Library_System
 
         private void LoginPage_Load(object sender, EventArgs e)
         {
-            if (!addNewUser)
+            try
             {
-                DatabaseControl();
+                if (!addNewUser)
+                {
+                    DatabaseControl();
+                }
+                else
+                {
+                    loadRegisterPage();
+                }
             }
-            else
+            catch
             {
-                loadRegisterPage();
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.errorMode = true;
+                warning.effect = effect;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
         private void DatabaseControl()

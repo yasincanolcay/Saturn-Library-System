@@ -33,48 +33,62 @@ namespace Saturn_Library_System
 
         private void changeButton_Click(object sender, EventArgs e)
         {
+            changeButton.Visible = false;
+            loadingProgress.Visible = true;
+            loadingProgress.Start();
             Thread changeThread = new Thread(new ThreadStart(changePassword));
             changeThread.Start();
         }
         private void changePassword()
         {
-            if (newsPasswordBox.Text != string.Empty && newPasswordRepeatBox.Text != string.Empty && newsPasswordBox.Text == newPasswordRepeatBox.Text)
+            goTry:
+            try
             {
-                SqlConnection sqlConnection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + "'" + Application.StartupPath + "\\SaturnDatabase.mdf'" + ";Integrated Security=True");
-                string password = Encrypt(newsPasswordBox.Text);
-                string query = "UPDATE LoginUsers SET Password=@password where Id=@id";
-                using (SqlCommand command = new SqlCommand(query, sqlConnection))
+                if (newsPasswordBox.Text != string.Empty && newPasswordRepeatBox.Text != string.Empty && newsPasswordBox.Text == newPasswordRepeatBox.Text)
                 {
-                    command.Parameters.Clear();
-                    command.CommandTimeout = 180;
-                    command.Parameters.AddWithValue("@id", Id);
-                    command.Parameters.AddWithValue("@password", password);
-                    sqlConnection.Open();
-                    command.ExecuteNonQuery();
-                    sqlConnection.Close();
+                    SqlConnection sqlConnection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + "'" + Application.StartupPath + "\\SaturnDatabase.mdf'" + ";Integrated Security=True");
+                    string password = Encrypt(newsPasswordBox.Text);
+                    string query = "UPDATE LoginUsers SET Password=@password where Id=@id";
+                    using (SqlCommand command = new SqlCommand(query, sqlConnection))
+                    {
+                        command.Parameters.Clear();
+                        command.CommandTimeout = 180;
+                        command.Parameters.AddWithValue("@id", Id);
+                        command.Parameters.AddWithValue("@password", password);
+                        sqlConnection.Open();
+                        command.ExecuteNonQuery();
+                        sqlConnection.Close();
+                    }
+                    MaterialEffect effect2 = new MaterialEffect();
+                    effect2.Show();
+                    WarningCard warning = new WarningCard();
+                    warning.effect = effect2;
+                    warning.errorMode = true;
+                    warning.fullNameLabel.Text = "ŞİFRE GÜNCELLEMESİ";
+                    warning.emailLabel.Text = "Şifreniz başarılı bir şekilde güncellendi, iyi çalışmalar dileriz";
+                    warning.ShowDialog();
+                    effect.Close();
+                    sqlConnection.Dispose();
+                    this.Close();
                 }
-                MaterialEffect effect2 = new MaterialEffect();
-                effect2.Show();
-                WarningCard warning = new WarningCard();
-                warning.effect = effect2;
-                warning.errorMode = true;
-                warning.fullNameLabel.Text = "ŞİFRE GÜNCELLEMESİ";
-                warning.emailLabel.Text = "Şifreniz başarılı bir şekilde güncellendi, iyi çalışmalar dileriz";
-                warning.ShowDialog();
-                effect.Close();
-                sqlConnection.Dispose();
-                this.Close();
+                else
+                {
+                    MaterialEffect effect2 = new MaterialEffect();
+                    effect2.Show();
+                    WarningCard warning = new WarningCard();
+                    warning.effect = effect2;
+                    warning.errorMode = true;
+                    warning.fullNameLabel.Text = "Geçersiz Değer";
+                    warning.emailLabel.Text = "Lütfen bilgilerinizin doğruluğunu kontrol ediniz!";
+                    warning.ShowDialog();
+                    loadingProgress.Stop();
+                    loadingProgress.Visible = false;
+                    changeButton.Visible = true;
+                }
             }
-            else
+            catch
             {
-                MaterialEffect effect2 = new MaterialEffect();
-                effect2.Show();
-                WarningCard warning = new WarningCard();
-                warning.effect = effect2;
-                warning.errorMode = true;
-                warning.fullNameLabel.Text = "Geçersiz Değer";
-                warning.emailLabel.Text = "Lütfen bilgilerinizin doğruluğunu kontrol ediniz!";
-                warning.ShowDialog();
+                goto goTry;
             }
         }
         public static string Encrypt(string encryptString)

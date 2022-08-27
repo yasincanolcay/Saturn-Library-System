@@ -362,7 +362,6 @@ namespace Saturn_Library_System
             this.tagTextbox.SelectedText = "";
             this.tagTextbox.Size = new System.Drawing.Size(280, 36);
             this.tagTextbox.TabIndex = 21;
-            this.tagTextbox.TextChanged += new System.EventHandler(this.tagTextbox_TextChanged);
             this.tagTextbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tagTextbox_KeyDown);
             // 
             // guna2Separator10

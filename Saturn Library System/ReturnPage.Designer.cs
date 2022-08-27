@@ -179,7 +179,6 @@ namespace Saturn_Library_System
             this.guna2HScrollBar1.Size = new System.Drawing.Size(671, 18);
             this.guna2HScrollBar1.TabIndex = 0;
             this.guna2HScrollBar1.ThumbStyle = Guna.UI2.WinForms.Enums.ThumbStyle.Inset;
-            this.guna2HScrollBar1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.guna2HScrollBar1_Scroll);
             // 
             // ReturnPage
             // 

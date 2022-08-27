@@ -100,45 +100,59 @@ namespace Saturn_Library_System
         //First take it setings data
         private void readSettingsData()
         {
-            using(SqlCommand command = new SqlCommand("SELECT * From [Settings]",sqlConnection))
+            try
             {
-                sqlConnection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-                if (reader.Read())
+                using (SqlCommand command = new SqlCommand("SELECT * From [Settings]", sqlConnection))
                 {
-                    if (Convert.ToInt32(reader["AutoStartNightmode"]) == 1)
+                    sqlConnection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    if (reader.Read())
                     {
-                        guna2ToggleSwitch1.Checked = true;
+                        if (Convert.ToInt32(reader["AutoStartNightmode"]) == 1)
+                        {
+                            guna2ToggleSwitch1.Checked = true;
+                        }
+                        if (Convert.ToInt32(reader["AutoNightmode"]) == 1)
+                        {
+                            autoNightMode = true;
+                        }
+                        if (Convert.ToInt32(reader["AutoBlocked"]) == 0)
+                        {
+                            autoBlocked = false;
+                        }
+                        if (Convert.ToInt32(reader["NotificationSound"]) == 0)
+                        {
+                            notificationSound = false;
+                        }
+                        if (Convert.ToInt32(reader["NotificationShow"]) == 0)
+                        {
+                            notificationShow = false;
+                        }
+                        if (Convert.ToInt32(reader["SaveLog"]) == 1)
+                        {
+                            saveLog = true;
+                        }
+                        if (Convert.ToInt32(reader["SendTelegram"]) == 1)
+                        {
+                            sendTelegram = true;
+                        }
+                        telegramToken = reader["TelegramToken"].ToString();
+                        telegramId = reader["TelegramId"].ToString();
                     }
-                    if (Convert.ToInt32(reader["AutoNightmode"]) == 1)
-                    {
-                        autoNightMode = true;
-                    }
-                    if (Convert.ToInt32(reader["AutoBlocked"]) == 0)
-                    {
-                        autoBlocked = false;
-                    }
-                    if (Convert.ToInt32(reader["NotificationSound"]) == 0)
-                    {
-                        notificationSound = false;
-                    }
-                    if (Convert.ToInt32(reader["NotificationShow"]) == 0)
-                    {
-                        notificationShow = false;
-                    }
-                    if (Convert.ToInt32(reader["SaveLog"]) == 1)
-                    {
-                        saveLog = true;
-                    }
-                    if (Convert.ToInt32(reader["SendTelegram"]) == 1)
-                    {
-                        sendTelegram = true;
-                    }
-                    telegramToken = reader["TelegramToken"].ToString();
-                    telegramId = reader["TelegramId"].ToString();
+                    reader.Close();
+                    sqlConnection.Close();
                 }
-                reader.Close();
-                sqlConnection.Close();
+            }
+            catch
+            {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.errorMode = true;
+                warning.effect = effect;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
         //Notifications send to your telegram account
@@ -165,58 +179,65 @@ namespace Saturn_Library_System
         //Takes login acces info
         private void loadLoginInfo()
         {
-            string access = "";
-            sqlConnection.Open();
-            SqlCommand command = new SqlCommand();
-            command.Connection = sqlConnection;
-            command.CommandText = "SELECT * From [LoginUsers]";
-            SqlDataReader reader = command.ExecuteReader();
-            while (reader.Read())
+            try
             {
-                if (Id == Convert.ToInt32(reader["Id"]))
+                string access = "";
+                sqlConnection.Open();
+                SqlCommand command = new SqlCommand();
+                command.Connection = sqlConnection;
+                command.CommandText = "SELECT * From [LoginUsers]";
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
                 {
-                    access = reader["Access"].ToString();
-                    username = reader["UserName"].ToString();
-                    usernameLabel.Text = reader["UserName"].ToString();
-                    userDeniedLabel.Text = reader["Access"].ToString();
-                    Byte[] data = new Byte[0];
-                    data = (Byte[])(reader["Photo"]);
-                    MemoryStream stream = new MemoryStream(data);
-                    guna2CirclePictureBox1.Image = Image.FromStream(stream);
+                    if (Id == Convert.ToInt32(reader["Id"]))
+                    {
+                        access = reader["Access"].ToString();
+                        username = reader["UserName"].ToString();
+                        usernameLabel.Text = reader["UserName"].ToString();
+                        userDeniedLabel.Text = reader["Access"].ToString();
+                        Byte[] data = new Byte[0];
+                        data = (Byte[])(reader["Photo"]);
+                        MemoryStream stream = new MemoryStream(data);
+                        guna2CirclePictureBox1.Image = Image.FromStream(stream);
 
-                    if (reader["Access"].ToString() == "Admin")
-                    {
-                        Admin = true;
-                    }
-                    else if (reader["Access"].ToString()=="Moderatör")
-                    {
-                        moderator = true;
-                    }
-                    else
-                    {
-                        guna2TileButton1.Enabled = false;
-                        guna2TileButton2.Enabled = false;
-                        guna2TileButton1.Text = "Yetki Yok";
-                        guna2TileButton2.Text = "Yetki Yok";
+                        if (reader["Access"].ToString() == "Admin")
+                        {
+                            Admin = true;
+                        }
+                        else if (reader["Access"].ToString() == "Moderatör")
+                        {
+                            moderator = true;
+                        }
+                        else
+                        {
+                            guna2TileButton1.Enabled = false;
+                            guna2TileButton2.Enabled = false;
+                            guna2TileButton1.Text = "Yetki Yok";
+                            guna2TileButton2.Text = "Yetki Yok";
+                        }
+
                     }
 
                 }
-
+                reader.Close();
+                sqlConnection.Close();
+                loadHomePage();
+                notificationsTimer.Enabled = true;
+                notificationsTimer.Start();
+                if (sendTelegram)
+                {
+                    try
+                    {
+                        sendNotificationToTelegram("Saturn Library System\nYeni bir giriş algılandı.\n" + "Kullanıcı Adı: " + username + "\nYetki: " + access + "\n" + DateTime.Now.ToString());
+                    }
+                    catch
+                    {
+                    }
+                }
             }
-            reader.Close();
-            sqlConnection.Close();
-            loadHomePage();
-            notificationsTimer.Enabled = true;
-            notificationsTimer.Start();
-            if (sendTelegram)
+            catch
             {
-                try
-                {
-                    sendNotificationToTelegram("Saturn Library System\nYeni bir giriş algılandı.\n" + "Kullanıcı Adı: " + username + "\nYetki: " + access + "\n" + DateTime.Now.ToString());
-                }
-                catch
-                {
-                }
+                showWarning("HATA", "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.");
             }
         }
         private void loadHomePage()
@@ -430,106 +451,113 @@ namespace Saturn_Library_System
         bool lateWarning = false;
         private void NotificationsControl()
         {
-            late = 0;
-            blocked = 0;
-            for (int i = 0; i < returnTimes.Count; i++)
+            try
             {
-                if (returnTimes[i].Month < DateTime.Now.Month || returnTimes[i].Year < DateTime.Now.Year || (returnTimes[i].Day < DateTime.Now.Day || DateTime.Parse(returnClock[i]).Hour < DateTime.Now.Hour))
+                late = 0;
+                blocked = 0;
+                for (int i = 0; i < returnTimes.Count; i++)
                 {
-                    string query = "SELECT * From [Users]";
-                    int blockedRank = 0;
-                    int totalBlocked = 0;
-                    int totalLate = 0;
-                    using (SqlCommand command = new SqlCommand(query, sqlConnection))
+                    if (returnTimes[i].Month < DateTime.Now.Month || returnTimes[i].Year < DateTime.Now.Year || (returnTimes[i].Day < DateTime.Now.Day || DateTime.Parse(returnClock[i]).Hour < DateTime.Now.Hour))
                     {
-                        sqlConnection.Open();
-                        SqlDataReader reader = command.ExecuteReader();
-                        while (reader.Read())
+                        string query = "SELECT * From [Users]";
+                        int blockedRank = 0;
+                        int totalBlocked = 0;
+                        int totalLate = 0;
+                        using (SqlCommand command = new SqlCommand(query, sqlConnection))
                         {
-                            if (userId[i] == Convert.ToInt32(reader["Id"]))
+                            sqlConnection.Open();
+                            SqlDataReader reader = command.ExecuteReader();
+                            while (reader.Read())
                             {
-                                if (Convert.ToInt32(reader["Blocked"]) == 1)
+                                if (userId[i] == Convert.ToInt32(reader["Id"]))
                                 {
-                                    blockedId.Add(Convert.ToInt32(reader["Id"]));
+                                    if (Convert.ToInt32(reader["Blocked"]) == 1)
+                                    {
+                                        blockedId.Add(Convert.ToInt32(reader["Id"]));
+                                    }
+                                    totalLate = Convert.ToInt32(reader["LateBooks"]);
+                                    blockedRank = Convert.ToInt32(reader["BlockedRank"]);
+                                    totalBlocked = Convert.ToInt32(reader["TotalBlocked"]);
                                 }
-                                totalLate = Convert.ToInt32(reader["LateBooks"]);
-                                blockedRank = Convert.ToInt32(reader["BlockedRank"]);
-                                totalBlocked = Convert.ToInt32(reader["TotalBlocked"]);
                             }
+                            reader.Close();
+                            sqlConnection.Close();
                         }
-                        reader.Close();
-                        sqlConnection.Close();
-                    }
-                    if (blockedRank < 5)
-                    {
-                        if (!blockedRankId.Contains(userId[i]))
+                        if (blockedRank < 5)
                         {
-                            query = "UPDATE Users SET BlockedRank=@blockedRank,LateBooks=@late where Id=@id";
-                            using (SqlCommand command = new SqlCommand(query, sqlConnection))
+                            if (!blockedRankId.Contains(userId[i]))
                             {
-                                command.Parameters.Clear();
-                                command.Parameters.AddWithValue("@id", userId[i]);
-                                command.Parameters.AddWithValue("@blockedRank", blockedRank + 1);
-                                command.Parameters.AddWithValue("@late", totalLate + 1);
-                                sqlConnection.Open();
-                                command.ExecuteNonQuery();
-                                sqlConnection.Close();
-                            }
-                            blockedRankId.Add(userId[i]);
-                        }
-                    }
-                    else
-                    {
-                        if (!blockedId.Contains(userId[i]))
-                        {
-                            if (autoBlocked)
-                            {
-                                blocked++;
-                                query = "UPDATE Users SET Blocked=@blocked,TotalBlocked=@totalblocked where Id=@id";
+                                query = "UPDATE Users SET BlockedRank=@blockedRank,LateBooks=@late where Id=@id";
                                 using (SqlCommand command = new SqlCommand(query, sqlConnection))
                                 {
                                     command.Parameters.Clear();
                                     command.Parameters.AddWithValue("@id", userId[i]);
-                                    command.Parameters.AddWithValue("@blocked", 1);
-                                    command.Parameters.AddWithValue("@totalblocked", totalBlocked + 1);
+                                    command.Parameters.AddWithValue("@blockedRank", blockedRank + 1);
+                                    command.Parameters.AddWithValue("@late", totalLate + 1);
                                     sqlConnection.Open();
                                     command.ExecuteNonQuery();
                                     sqlConnection.Close();
                                 }
-                                if (notificationSound)
+                                blockedRankId.Add(userId[i]);
+                            }
+                        }
+                        else
+                        {
+                            if (!blockedId.Contains(userId[i]))
+                            {
+                                if (autoBlocked)
                                 {
-                                    sound.Play();
-                                }
-                                if (notificationShow)
-                                {
-                                    showWarning("Engellenen Kullanıcı", "Bir kullanıcı kara listeye eklendi");
-                                }
-                                home.label15.Text = blocked.ToString();
-                                blockedId.Add(userId[i]);
-                                if (sendTelegram)
-                                {
-                                    try
+                                    blocked++;
+                                    query = "UPDATE Users SET Blocked=@blocked,TotalBlocked=@totalblocked where Id=@id";
+                                    using (SqlCommand command = new SqlCommand(query, sqlConnection))
                                     {
-                                        sendNotificationToTelegram("Saturn Library System\nBir kullanını kara listeye eklendi\n"+DateTime.Now.ToString());
+                                        command.Parameters.Clear();
+                                        command.Parameters.AddWithValue("@id", userId[i]);
+                                        command.Parameters.AddWithValue("@blocked", 1);
+                                        command.Parameters.AddWithValue("@totalblocked", totalBlocked + 1);
+                                        sqlConnection.Open();
+                                        command.ExecuteNonQuery();
+                                        sqlConnection.Close();
                                     }
-                                    catch
+                                    if (notificationSound)
                                     {
-                                        showWarning("HATA", "Bildirimler telegrama gönderilemedi, bağlantınızı kontrol edin.");
+                                        sound.Play();
+                                    }
+                                    if (notificationShow)
+                                    {
+                                        showWarning("Engellenen Kullanıcı", "Bir kullanıcı kara listeye eklendi");
+                                    }
+                                    home.label15.Text = blocked.ToString();
+                                    blockedId.Add(userId[i]);
+                                    if (sendTelegram)
+                                    {
+                                        try
+                                        {
+                                            sendNotificationToTelegram("Saturn Library System\nBir kullanını kara listeye eklendi\n" + DateTime.Now.ToString());
+                                        }
+                                        catch
+                                        {
+                                            showWarning("HATA", "Bildirimler telegrama gönderilemedi, bağlantınızı kontrol edin.");
+                                        }
                                     }
                                 }
                             }
                         }
+
                     }
-                   
                 }
+                lossBooksId.Clear();
+                todayTakeBooksId.Clear();
+                lateBooksId.Clear();
+                returnTimes.Clear();
+                returnClock.Clear();
+                userId.Clear();
+                loadReturnBooks();
             }
-            lossBooksId.Clear();
-            todayTakeBooksId.Clear();
-            lateBooksId.Clear();
-            returnTimes.Clear();
-            returnClock.Clear();
-            userId.Clear();
-            loadReturnBooks();
+            catch
+            {
+                showWarning("HATA", "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.");
+            }
         }
         private void loadBooksPage()
         {

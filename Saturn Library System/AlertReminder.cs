@@ -34,17 +34,31 @@ namespace Saturn_Library_System
 
         private void AlertReminder_Load(object sender, EventArgs e)
         {
-            SqlConnection sqlConnection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + "'" + Application.StartupPath + "\\SaturnDatabase.mdf'" + ";Integrated Security=True");
-
-            string query = "UPDATE Reminders SET isRead=@read where Id=@id";
-            using (SqlCommand command = new SqlCommand(query, sqlConnection))
+            try
             {
-                command.Parameters.Clear();
-                command.Parameters.AddWithValue("@id", Id);
-                command.Parameters.AddWithValue("@read", 1);
-                sqlConnection.Open();
-                command.ExecuteNonQuery();
-                sqlConnection.Close();
+                SqlConnection sqlConnection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + "'" + Application.StartupPath + "\\SaturnDatabase.mdf'" + ";Integrated Security=True");
+
+                string query = "UPDATE Reminders SET isRead=@read where Id=@id";
+                using (SqlCommand command = new SqlCommand(query, sqlConnection))
+                {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@id", Id);
+                    command.Parameters.AddWithValue("@read", 1);
+                    sqlConnection.Open();
+                    command.ExecuteNonQuery();
+                    sqlConnection.Close();
+                }
+            }
+            catch
+            {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.errorMode = true;
+                warning.effect = effect;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
     }

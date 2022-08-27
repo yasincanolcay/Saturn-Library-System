@@ -46,51 +46,65 @@ namespace Saturn_Library_System
         }
         private void loadPage()
         {
-            pageViewerPanel.Controls.Clear();
-            if (!OnUsersPage)
+            try
             {
-                UsersPage users = new UsersPage();
-                users.powColor = powColor;
-                users.lightColor = lightColor;
-                users.foreColor = foreColor;
-                users.panel1.BackColor = lightColor;
-                users.flowLayoutPanel1.BackColor = lightColor;
-                users.BackColor = lightColor;
-                users.addReturn = true;
-                users.TopLevel = false;
-                users.Dock = DockStyle.Fill;
-                users.bookId = BookId;
-                users.page = Page;
-                users.bookNumber = stockNumber;
-                users.takeDate = DateTime.Parse(guna2DateTimePicker1.Text);
-                users.clock = clockPicker.Text;
-                users.admin = admin;
-                users.moderator = moderator;
-                pageViewerPanel.Controls.Add(users);
-                users.Show();
+                pageViewerPanel.Controls.Clear();
+                if (!OnUsersPage)
+                {
+                    UsersPage users = new UsersPage();
+                    users.powColor = powColor;
+                    users.lightColor = lightColor;
+                    users.foreColor = foreColor;
+                    users.panel1.BackColor = lightColor;
+                    users.flowLayoutPanel1.BackColor = lightColor;
+                    users.BackColor = lightColor;
+                    users.addReturn = true;
+                    users.TopLevel = false;
+                    users.Dock = DockStyle.Fill;
+                    users.bookId = BookId;
+                    users.page = Page;
+                    users.bookNumber = stockNumber;
+                    users.takeDate = DateTime.Parse(guna2DateTimePicker1.Text);
+                    users.clock = clockPicker.Text;
+                    users.admin = admin;
+                    users.moderator = moderator;
+                    pageViewerPanel.Controls.Add(users);
+                    users.Show();
+                }
+                else
+                {
+                    headerLabel.Text = "Kitapları Seçin";
+                    BooksPage books = new BooksPage();
+                    books.powColor = powColor;
+                    books.lightColor = lightColor;
+                    books.foreColor = foreColor;
+                    books.panel1.BackColor = lightColor;
+                    books.flowLayoutPanel1.BackColor = lightColor;
+                    books.BackColor = lightColor;
+                    books.AddReturn = true;
+                    books.UserId = UserId;
+                    books.TopLevel = false;
+                    books.Dock = DockStyle.Fill;
+                    books.TakeDate = DateTime.Parse(guna2DateTimePicker1.Text);
+                    books.Clock = clockPicker.Text;
+                    books.Page = Page;
+                    books.Admin = admin;
+                    books.Moderator = moderator;
+                    books.stockNumber = stockNumber;
+                    pageViewerPanel.Controls.Add(books);
+                    books.Show();
+                }
             }
-            else
+            catch
             {
-                headerLabel.Text = "Kitapları Seçin";
-                BooksPage books = new BooksPage();
-                books.powColor = powColor;
-                books.lightColor = lightColor;
-                books.foreColor = foreColor;
-                books.panel1.BackColor = lightColor;
-                books.flowLayoutPanel1.BackColor = lightColor;
-                books.BackColor = lightColor;
-                books.AddReturn = true;
-                books.UserId = UserId;
-                books.TopLevel = false;
-                books.Dock = DockStyle.Fill;
-                books.TakeDate = DateTime.Parse(guna2DateTimePicker1.Text);
-                books.Clock = clockPicker.Text;
-                books.Page = Page;
-                books.Admin = admin;
-                books.Moderator = moderator;
-                books.stockNumber = stockNumber;
-                pageViewerPanel.Controls.Add(books);
-                books.Show();
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.errorMode = true;
+                warning.effect = effect;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Yükleme yapılırken bir hata oluştu, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
         private void closeButton_Click(object sender, EventArgs e)

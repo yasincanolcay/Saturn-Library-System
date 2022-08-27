@@ -29,33 +29,47 @@ namespace Saturn_Library_System
         }
         private void nextUsername()
         {
-            bool isExists = false;
-            int Id = 0;
-            string query = "SELECT * From [LoginUsers] where UserName='" + usernameTextbox.Text + "'";
-            using(SqlCommand command = new SqlCommand(query, sqlConnection))
+            try
             {
-                sqlConnection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-                if (reader.Read())
+                bool isExists = false;
+                int Id = 0;
+                string query = "SELECT * From [LoginUsers] where UserName='" + usernameTextbox.Text + "'";
+                using (SqlCommand command = new SqlCommand(query, sqlConnection))
                 {
-                    Id = Convert.ToInt32(reader["Id"]);
-                    isExists = true;
+                    sqlConnection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        Id = Convert.ToInt32(reader["Id"]);
+                        isExists = true;
+                    }
+                    if (isExists)
+                    {
+                        MaterialEffect effect2 = new MaterialEffect();
+                        effect2.Show();
+                        ChangePasswordPage change = new ChangePasswordPage();
+                        change.Id = Id;
+                        change.effect = effect2;
+                        change.forgetMode = true;
+                        change.ShowDialog();
+                        effect.Close();
+                        this.Close();
+                    }
+                    reader.Close();
+                    sqlConnection.Close();
+                    sqlConnection.Dispose();
                 }
-                if (isExists)
-                {
-                    MaterialEffect effect2 = new MaterialEffect();
-                    effect2.Show();
-                    ChangePasswordPage change = new ChangePasswordPage();
-                    change.Id = Id;
-                    change.effect = effect2;
-                    change.forgetMode = true;
-                    change.ShowDialog();
-                    effect.Close();
-                    this.Close();
-                }
-                reader.Close();
-                sqlConnection.Close();
-                sqlConnection.Dispose();
+            }
+            catch
+            {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.errorMode = true;
+                warning.effect = effect;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
 

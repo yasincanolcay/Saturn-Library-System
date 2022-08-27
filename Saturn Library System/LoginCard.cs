@@ -24,56 +24,85 @@ namespace Saturn_Library_System
 
         private void loginButton_Click(object sender, EventArgs e)
         {
-            if (usernameTextbox.Text != string.Empty && passwordTextbox.Text != string.Empty)
+            try
             {
-                if (loginLimit < 4)
+                if (usernameTextbox.Text != string.Empty && passwordTextbox.Text != string.Empty)
                 {
-                    login();
+                    if (loginLimit < 4)
+                    {
+                        login();
+                    }
+                    else
+                    {
+                        limitTimer.Enabled = true;
+                        limitTimer.Start();
+                        loginButton.Visible = false;
+                        limitSecondLabel.Visible = true;
+                    }
                 }
-                else
-                {
-                    limitTimer.Enabled = true;
-                    limitTimer.Start();
-                    loginButton.Visible = false;
-                    limitSecondLabel.Visible = true;
-                }
+            }
+            catch
+            {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.errorMode = true;
+                warning.effect = effect;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
         private void login()
         {
-            loginButton.Visible = false;
-            loadingProgress.Visible = true;
-            loadingProgress.Start();
-            loadingTimer.Enabled = true;
-            loadingTimer.Start();
-            string Password = "";
-            int Id = 0;
-            bool IsExist = false;
-
-            SqlConnection sqlConnection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + "'" + Application.StartupPath + "\\SaturnDatabase.mdf'" + ";Integrated Security=True");
-
-            using (SqlCommand command = new SqlCommand("SELECT * From [LoginUsers] where UserName='" + usernameTextbox.Text + "'",sqlConnection))
+            try
             {
-                sqlConnection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-                if (reader.Read())
+                loginButton.Visible = false;
+                loadingProgress.Visible = true;
+                loadingProgress.Start();
+                loadingTimer.Enabled = true;
+                loadingTimer.Start();
+                string Password = "";
+                int Id = 0;
+                bool IsExist = false;
+
+                SqlConnection sqlConnection = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + "'" + Application.StartupPath + "\\SaturnDatabase.mdf'" + ";Integrated Security=True");
+
+                using (SqlCommand command = new SqlCommand("SELECT * From [LoginUsers] where UserName='" + usernameTextbox.Text + "'", sqlConnection))
                 {
-                    Password = reader["Password"].ToString(); //get the user password from db if the user name is exist in that.  
-                    Id = Convert.ToInt32(reader["Id"]);
-                    IsExist = true;
-                }
-                sqlConnection.Close();
-                if (IsExist)
-                {
-                    if (Decrypt(Password).Equals(passwordTextbox.Text))
+                    sqlConnection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    if (reader.Read())
                     {
-                        Form1 form = new Form1();
-                        form.Id = Id;
-                        form.page = page;
-                        form.Show();
-                        usernameTextbox.Clear();
-                        passwordTextbox.Clear();
-                        page.Hide();
+                        Password = reader["Password"].ToString(); //get the user password from db if the user name is exist in that.  
+                        Id = Convert.ToInt32(reader["Id"]);
+                        IsExist = true;
+                    }
+                    sqlConnection.Close();
+                    if (IsExist)
+                    {
+                        if (Decrypt(Password).Equals(passwordTextbox.Text))
+                        {
+                            Form1 form = new Form1();
+                            form.Id = Id;
+                            form.page = page;
+                            form.Show();
+                            usernameTextbox.Clear();
+                            passwordTextbox.Clear();
+                            page.Hide();
+                        }
+                        else
+                        {
+                            MaterialEffect effect = new MaterialEffect();
+                            effect.Show();
+                            WarningCard warning = new WarningCard();
+                            warning.errorMode = true;
+                            warning.effect = effect;
+                            warning.fullNameLabel.Text = "Hatalı Şifre";
+                            warning.emailLabel.Text = "Girdiginiz şifre hatalı, lütfen tekrar deneyin!";
+                            loginLimit++;
+                            warning.ShowDialog();
+                        }
                     }
                     else
                     {
@@ -82,26 +111,24 @@ namespace Saturn_Library_System
                         WarningCard warning = new WarningCard();
                         warning.errorMode = true;
                         warning.effect = effect;
-                        warning.fullNameLabel.Text = "Hatalı Şifre";
-                        warning.emailLabel.Text = "Girdiginiz şifre hatalı, lütfen tekrar deneyin!";
+                        warning.fullNameLabel.Text = "Kullanıcı Bulunamadı";
+                        warning.emailLabel.Text = "Girdiginiz bilgilerle eşleşen kullanıcı yok, lütfen bilgileri kontrol edin!";
                         loginLimit++;
                         warning.ShowDialog();
                     }
                 }
-                else
-                {
-                    MaterialEffect effect = new MaterialEffect();
-                    effect.Show();
-                    WarningCard warning = new WarningCard();
-                    warning.errorMode = true;
-                    warning.effect = effect;
-                    warning.fullNameLabel.Text = "Kullanıcı Bulunamadı";
-                    warning.emailLabel.Text = "Girdiginiz bilgilerle eşleşen kullanıcı yok, lütfen bilgileri kontrol edin!";
-                    loginLimit++;
-                    warning.ShowDialog();
-                }
             }
-
+            catch
+            {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.errorMode = true;
+                warning.effect = effect;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
+            }
         }
         //veritabaından hash formatında gelen şifreyi çözümler
         public static string Decrypt(string cipherText)

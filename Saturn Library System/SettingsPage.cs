@@ -30,104 +30,160 @@ namespace Saturn_Library_System
         }
         private void readSettingsData()
         {
-            using(SqlCommand command = new SqlCommand("SELECT * From [Settings]",sqlConnection))
+            try
             {
-                sqlConnection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-                if (reader.Read())
+                using (SqlCommand command = new SqlCommand("SELECT * From [Settings]", sqlConnection))
                 {
-                    Id = Convert.ToInt32(reader["Id"]);
-                    if (Convert.ToInt32(reader["AutoStart"]) == 1)
+                    sqlConnection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    if (reader.Read())
                     {
-                        autostartToggle.Checked = true;
+                        Id = Convert.ToInt32(reader["Id"]);
+                        if (Convert.ToInt32(reader["AutoStart"]) == 1)
+                        {
+                            autostartToggle.Checked = true;
+                        }
+                        if (Convert.ToInt32(reader["AutoStartNightmode"]) == 1)
+                        {
+                            autostartNightToggle.Checked = true;
+                        }
+                        if (Convert.ToInt32(reader["AutoNightmode"]) == 1)
+                        {
+                            autoNightToggle.Checked = true;
+                        }
+                        if (Convert.ToInt32(reader["AutoBlocked"]) == 1)
+                        {
+                            autoBlockedToggle.Checked = true;
+                        }
+                        if (Convert.ToInt32(reader["NotificationSound"]) == 1)
+                        {
+                            notificationSoundToggle.Checked = true;
+                        }
+                        if (Convert.ToInt32(reader["NotificationShow"]) == 1)
+                        {
+                            notificationShowToggle.Checked = true;
+                        }
+                        if (Convert.ToInt32(reader["AutoCompletedIsbn"]) == 1)
+                        {
+                            autoCompleteToggle.Checked = true;
+                        }
+                        if (Convert.ToInt32(reader["SendTelegram"]) == 1)
+                        {
+                            telegramSendToggle.Checked = true;
+                        }
+                        tokenTextbox.Text = reader["TelegramToken"].ToString();
+                        idTextbox.Text = reader["TelegramId"].ToString();
                     }
-                    if(Convert.ToInt32(reader["AutoStartNightmode"]) == 1)
-                    {
-                        autostartNightToggle.Checked = true;
-                    }
-                    if(Convert.ToInt32(reader["AutoNightmode"]) == 1)
-                    {
-                        autoNightToggle.Checked = true;
-                    }
-                    if(Convert.ToInt32(reader["AutoBlocked"]) == 1)
-                    {
-                        autoBlockedToggle.Checked = true;
-                    }
-                    if(Convert.ToInt32(reader["NotificationSound"]) == 1)
-                    {
-                        notificationSoundToggle.Checked = true;
-                    }
-                    if(Convert.ToInt32(reader["NotificationShow"]) == 1)
-                    {
-                        notificationShowToggle.Checked = true;
-                    }
-                    if(Convert.ToInt32(reader["AutoCompletedIsbn"]) == 1)
-                    {
-                        autoCompleteToggle.Checked = true;
-                    }
-                    if(Convert.ToInt32(reader["SendTelegram"]) == 1)
-                    {
-                        telegramSendToggle.Checked = true;
-                    }
-                    tokenTextbox.Text = reader["TelegramToken"].ToString();
-                    idTextbox.Text = reader["TelegramId"].ToString();
+                    reader.Close();
+                    sqlConnection.Close();
+                    isReady = true;
                 }
-                reader.Close();
-                sqlConnection.Close();
-                isReady = true;
+                if (!admin)
+                {
+                    tokenTextbox.Enabled = false;
+                    idTextbox.Enabled = false;
+                    telegramSendToggle.Enabled = false;
+                    autostartToggle.Enabled = false;
+                    autoBlockedToggle.Enabled = false;
+                    addUserButton.Enabled = false;
+                }
             }
-            if (!admin)
+            catch
             {
-                tokenTextbox.Enabled = false;
-                idTextbox.Enabled = false;
-                telegramSendToggle.Enabled = false;
-                autostartToggle.Enabled = false;
-                autoBlockedToggle.Enabled = false;
-                addUserButton.Enabled = false;
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.effect = effect;
+                warning.errorMode = true;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Bazı işlemler gerçekleştirilemedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
         private void updateSettings(string parameter,int value)
         {
-            string query = "UPDATE Settings SET "+parameter+"=@parameter where Id=@id";
-            using(SqlCommand command = new SqlCommand(query, sqlConnection))
+            try
             {
-                command.Parameters.Clear();
-                command.Parameters.AddWithValue("@id", Id);
-                command.Parameters.AddWithValue("@parameter", value);
-                sqlConnection.Open();
-                command.ExecuteNonQuery();
-                sqlConnection.Close();
+                string query = "UPDATE Settings SET " + parameter + "=@parameter where Id=@id";
+                using (SqlCommand command = new SqlCommand(query, sqlConnection))
+                {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@id", Id);
+                    command.Parameters.AddWithValue("@parameter", value);
+                    sqlConnection.Open();
+                    command.ExecuteNonQuery();
+                    sqlConnection.Close();
+                }
+            }
+            catch
+            {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.effect = effect;
+                warning.errorMode = true;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Ayarlar kaydedilmedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
         private void updateSettingsTelegram(string parameter, string value)
         {
-            string query = "UPDATE Settings SET " + parameter + "=@parameter where Id=@id";
-            using (SqlCommand command = new SqlCommand(query, sqlConnection))
+            try
             {
-                command.Parameters.Clear();
-                command.Parameters.AddWithValue("@id", Id);
-                command.Parameters.AddWithValue("@parameter", value);
-                sqlConnection.Open();
-                command.ExecuteNonQuery();
-                sqlConnection.Close();
+                string query = "UPDATE Settings SET " + parameter + "=@parameter where Id=@id";
+                using (SqlCommand command = new SqlCommand(query, sqlConnection))
+                {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@id", Id);
+                    command.Parameters.AddWithValue("@parameter", value);
+                    sqlConnection.Open();
+                    command.ExecuteNonQuery();
+                    sqlConnection.Close();
+                }
+            }
+            catch
+            {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.effect = effect;
+                warning.errorMode = true;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Ayarlar kaydedilmedi, lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
         private void autostartToggle_CheckedChanged(object sender, EventArgs e)
         {
-            if (isReady)
+            try
             {
-                if (autostartToggle.Checked)
+                if (isReady)
                 {
-                    updateSettings("AutoStart", 1);
-                    RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
-                    key.SetValue("Saturn Library System", "\"" + Application.ExecutablePath + "\"");
+                    if (autostartToggle.Checked)
+                    {
+                        updateSettings("AutoStart", 1);
+                        RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
+                        key.SetValue("Saturn Library System", "\"" + Application.ExecutablePath + "\"");
+                    }
+                    else
+                    {
+                        updateSettings("AutoStart", 0);
+                        RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
+                        key.DeleteValue("Saturn Library System");
+                    }
                 }
-                else
-                {
-                    updateSettings("AutoStart", 0);
-                    RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
-                    key.DeleteValue("Saturn Library System");
-                }
+            }
+            catch
+            {
+                MaterialEffect effect = new MaterialEffect();
+                effect.Show();
+                WarningCard warning = new WarningCard();
+                warning.effect = effect;
+                warning.errorMode = true;
+                warning.fullNameLabel.Text = "HATA";
+                warning.emailLabel.Text = "Ayarlar kaydedilmedi , lütfen tekrar deneyiniz.";
+                warning.ShowDialog();
             }
         }
 

@@ -26,11 +26,31 @@ namespace Saturn_Library_System
         public UsersPage page = new UsersPage();
         public bool sortingChange = false;
         public bool isBlocked = false;
+        public Color powColor = Color.FromArgb(239, 181, 71);
+        public Color lightColor = Color.FromArgb(243, 198, 114);
+        public Color foreColor = Color.SaddleBrown;
         public UserProfilePage()
         {
             InitializeComponent();
         }
-
+        
+        private void UserProfilePage_Load(object sender, EventArgs e)
+        {
+            flowLayoutPanel1.BackColor = lightColor;
+            detailPanel.BackColor = lightColor;
+            levelStarPanel.FillColor = lightColor;
+            profilecardShadowPanel.FillColor = lightColor;
+            rankPanel.FillColor = lightColor;
+            schoolPanel.FillColor = lightColor;
+            totalblockPanel.FillColor = lightColor;
+            totalbookPanel.FillColor = lightColor;
+            totalgivePanel.FillColor = lightColor;
+            totallatePanel.FillColor = lightColor;
+            totallossPanel.FillColor = lightColor;
+            totalpagePanel.FillColor = lightColor;
+            trustPanel.FillColor = lightColor;
+            usersPanel.BackColor = lightColor;
+        }
         private void backPicturebox_Click(object sender, EventArgs e)
         {
             usersPanel.Controls.Clear();

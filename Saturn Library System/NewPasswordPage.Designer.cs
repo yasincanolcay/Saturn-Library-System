@@ -31,7 +31,7 @@ namespace Saturn_Library_System
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NewPasswordPage));
-            this.guna2Elipse1 = new Guna.UI2.WinForms.Guna2Elipse(this.components);
+            this.elipse = new Guna.UI2.WinForms.Guna2Elipse(this.components);
             this.closeButton = new Guna.UI2.WinForms.Guna2ControlBox();
             this.label3 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -40,13 +40,14 @@ namespace Saturn_Library_System
             this.guna2Separator1 = new Guna.UI2.WinForms.Guna2Separator();
             this.newsPasswordBox = new Guna.UI2.WinForms.Guna2TextBox();
             this.guna2Separator3 = new Guna.UI2.WinForms.Guna2Separator();
+            this.loadingProgress = new Guna.UI2.WinForms.Guna2ProgressIndicator();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // guna2Elipse1
+            // elipse
             // 
-            this.guna2Elipse1.BorderRadius = 25;
-            this.guna2Elipse1.TargetControl = this;
+            this.elipse.BorderRadius = 25;
+            this.elipse.TargetControl = this;
             // 
             // closeButton
             // 
@@ -75,6 +76,7 @@ namespace Saturn_Library_System
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.loadingProgress);
             this.panel1.Controls.Add(this.changeButton);
             this.panel1.Controls.Add(this.newPasswordRepeatBox);
             this.panel1.Controls.Add(this.guna2Separator1);
@@ -170,6 +172,15 @@ namespace Saturn_Library_System
             this.guna2Separator3.Size = new System.Drawing.Size(200, 10);
             this.guna2Separator3.TabIndex = 100;
             // 
+            // loadingProgress
+            // 
+            this.loadingProgress.Location = new System.Drawing.Point(189, 137);
+            this.loadingProgress.Name = "loadingProgress";
+            this.loadingProgress.ProgressColor = System.Drawing.Color.Chocolate;
+            this.loadingProgress.Size = new System.Drawing.Size(45, 45);
+            this.loadingProgress.TabIndex = 105;
+            this.loadingProgress.Visible = false;
+            // 
             // NewPasswordPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -192,7 +203,7 @@ namespace Saturn_Library_System
 
         #endregion
 
-        private Guna.UI2.WinForms.Guna2Elipse guna2Elipse1;
+        private Guna.UI2.WinForms.Guna2Elipse elipse;
         public Guna.UI2.WinForms.Guna2ControlBox closeButton;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Panel panel1;
@@ -201,5 +212,6 @@ namespace Saturn_Library_System
         public Guna.UI2.WinForms.Guna2Separator guna2Separator1;
         public Guna.UI2.WinForms.Guna2TextBox newsPasswordBox;
         public Guna.UI2.WinForms.Guna2Separator guna2Separator3;
+        private Guna.UI2.WinForms.Guna2ProgressIndicator loadingProgress;
     }
 }
